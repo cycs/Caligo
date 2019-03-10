@@ -241,7 +241,16 @@ export default class App extends Component<Props> {
 
         console.log(position)
         const communesShape = await this.state.communes.features.map((commune, i) => {
-            if(commune.properties.NAMN == 'Namur'){
+            const isInPolygon = this.isPositionInPolygon(position, commune)
+            this.isGeometryCollection(commune);
+
+            console.log(isInPolygon);
+            if(i == 314) {
+                console.log('namur', commune)
+            }
+            // console.log(this.isGC);
+
+            if (isInPolygon) {
                 console.log(i)
 
                 console.log(commune.geometry.coordinates)
@@ -306,6 +315,21 @@ export default class App extends Component<Props> {
         return union;
     }
 
+    isPositionInPolygon(position, commune) {
+        if (commune.properties.SHN == "BE421009" || commune.properties.SHN == "BE213002" || commune.properties.SHN == "BE233016") return false;
+
+        let polygon = commune.geometry.coordinates.length == 2 ? turf.polygon([commune.geometry.coordinates[1]]) : commune;
+        
+        const point = turf.point(position);
+        const isInMunicipality = turf.booleanPointInPolygon(point, polygon);
+
+        return isInMunicipality;
+    }
+
+    isGeometryCollection(commune) {
+        return this.isGC = commune.geometry.type === "GeometryCollection"; 
+    }
+
     async onPressPathMask() {
         console.log('PATH TO MASK');
 
@@ -327,6 +351,7 @@ export default class App extends Component<Props> {
     
                 commune = mask;
                 console.log(this.state)
+                console.log('mask', mask)
     
                 this.setState({
                     communes: update(this.state.communes, {
