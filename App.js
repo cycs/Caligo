@@ -15,6 +15,7 @@ import {name as appName} from './app.json';
 import communesJSON from './Communes-belgique.json';
 import * as turf from '@turf/turf';
 import update from 'immutability-helper';
+import { point } from '@turf/helpers';
 
 Mapbox.setAccessToken('pk.eyJ1IjoiY3ljcyIsImEiOiJjanN1anA2OWYwMGZtNGJrN3Y0ejJqOXpiIn0.q5gDP42dUSpQrUY0FyJiuw')
 
@@ -43,6 +44,10 @@ export default class App extends Component<Props> {
         this.state = {
           active: true,
           communes: communesJSON,
+          centerCoordinate: {
+              namur: [4.856387665236815, 50.465550770154636],
+              crisnee: [5.3954002323, 50.7111308907],
+            },
           shape: {
             geometry: {
               coordinates: [
@@ -68,7 +73,29 @@ export default class App extends Component<Props> {
               [5.395646, 50.716702],
               [5.396258, 50.716357],
               [5.396775, 50.716238]
-            ]
+            ],
+            lastPosition: {
+              coords: {
+                latitude: [0, 0],
+                longitude: [0, 0],
+              }
+            },
+            unionRect: {
+                one: [
+                    [4.861013, 50.467482],
+                    [4.863738, 50.467523],
+                    [4.863888, 50.465447],
+                    [4.861077, 50.466321],
+                    [4.861013, 50.467482],
+                ],
+                two: [
+                    [4.871870, 50.466799],
+                    [4.876184, 50.467194],
+                    [4.876762, 50.464121],
+                    [4.871977, 50.463971],
+                    [4.871870, 50.466799],
+                ]
+            }
         };
 
 
@@ -122,16 +149,17 @@ export default class App extends Component<Props> {
               })
             },
             (error) => { console.log(error) },
-            { enableHighAccuracy: true, timeout: 30000 }
+            { enableHighAccuracy: true, timeout: 30000, maximumAge: 3000 }
           )
 
           this.watchPosition = navigator.geolocation.watchPosition(
             (lastPosition) => {
                 console.log(lastPosition);
               this.setState({lastPosition});
+              this.drawCircle(lastPosition);
             },
             (error) => { console.log(error) },
-            {enableHighAccuracy: true, timeout: 20000, maximumAge: 0, distanceFilter: 1}
+            {enableHighAccuracy: true, timeout: 20000, maximumAge: 2000, distanceFilter: 10}
           );
         
     }
@@ -139,10 +167,6 @@ export default class App extends Component<Props> {
     componentDidUpdate(prevProps, prevState) {
         console.log("componentDidUpdate")
         console.log('prevState', prevState);
-
-        console.log('this',     );
-
-      
     }
 
     componentWillUnmount() {
@@ -151,14 +175,14 @@ export default class App extends Component<Props> {
 
     
     render() {
-        console.log(this.state)
-    console.log(communesJSON);
-    console.log('this', turf);
+        // console.log(this.state)
+        // console.log(communesJSON);
+        // console.log('this', turf);
 
     const communesShape = this.state.communes.features.map((commune, i) => {
         return (
         <Mapbox.ShapeSource key={commune.properties.SHN} id={commune.properties.SHN} shape={commune.geometry} tolerance={this.shapeSourceParams.tolerance}>
-                <Mapbox.FillLayer id={commune.properties.SHN} style={mbStyles.communes} />
+            <Mapbox.FillLayer id={commune.properties.SHN} style={mbStyles.communes} />
         </Mapbox.ShapeSource>)
     })
 
@@ -170,11 +194,11 @@ export default class App extends Component<Props> {
         <Button
             onPress={this.onPressMaskMap.bind(this)}
             title="Mask Map"
-            color="#441584"
+            color="#441583"
         />
         <Button
-            onPress={this.onPressPathMask.bind(this)}
-            title="Path to polygon to mask"
+            onPress={this.unionMultiPolygons.bind(this, this.state.unionRect.one, this.state.unionRect.two)}
+            title="Union multiPolygons"
             color="#941584"
         />
         {/* <Text style={styles.instructions}>To get started, edit App.js</Text> */}
@@ -183,7 +207,7 @@ export default class App extends Component<Props> {
             ref={(c)=> this._map = c}
             styleURL={Mapbox.StyleURL.Dark} 
             zoomLevel={12} 
-            centerCoordinate={[5.3954002323, 50.7111308907]} 
+            centerCoordinate={this.state.centerCoordinate.namur} 
             style={styles.container}
             logoEnabled={false}
             rotateEnabled={false}
@@ -204,10 +228,88 @@ export default class App extends Component<Props> {
     /* Methods
     --------------------------------------------------------- */
 
+    async drawCircle(state) {
+        console.log('draw circle state', state);
+        console.log(this.state.communes)
+
+        const position = [this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude];
+
+        const center = position;
+        const radius = 0.005;
+        const options = {steps: 64, units: 'kilometers'};
+        let circle = turf.circle(center, radius, options);
+
+        console.log(position)
+        const communesShape = await this.state.communes.features.map((commune, i) => {
+            if(commune.properties.NAMN == 'Namur'){
+                console.log(i)
+
+                console.log(commune.geometry.coordinates)
+                // this.unionPolygons(commune.geometry.coordinates[1], circle)
+
+                let coords = commune.geometry.coordinates[0]
+
+                if (commune.geometry.coordinates.length === 2) { // if 2 arrays, then the first is a mask
+                    coords = commune.geometry.coordinates[1];
+                    const actualMask = turf.polygon([commune.geometry.coordinates[0]]);
+
+                    const intersection = turf.intersect(actualMask, circle);
+
+                    circle = intersection ? this.unionPolygons(actualMask, circle) : this.unionMultiPolygons(actualMask, circle);
+                }
+                var poly1 = turf.polygon([coords]);
+                // var poly2 = turf.polygon([this.state.shape.geometry.coordinates]);
+    
+                var mask = turf.mask(poly1, circle);
+                // console.log('mask', mask)
+    
+                mask.properties.SHN = commune.properties.SHN
+                mask.properties.NAMN = commune.properties.NAMN
+    
+                commune = mask;
+                console.log(this.state)
+    
+                this.setState({
+                    communes: update(this.state.communes, {
+                        features: {
+                            [i]: {$set: mask}
+                        }
+                    })
+                  });
+            }
+        })
+    }
+
+    unionPolygons(poly1, poly2) {
+        // const union1 = turf.polygon([poly1]);
+        // const union2 = turf.polygon([poly2.geometry.coordinates[0]]);
+        
+        // const circle = poly2.geometry.coordinates;
+        const union = turf.union(poly1, poly2);
+
+        return union;
+    }
+
+    unionMultiPolygons(poly1, poly2) {
+        console.log(poly1, poly2)
+        this.bufferDistance =  0.000001 //in kilometers
+          
+        const pointOnPolygon1 = turf.pointOnFeature(poly1);
+        const pointOnPolygon2 = turf.pointOnFeature(poly2);
+
+        const line = [pointOnPolygon1.geometry.coordinates, pointOnPolygon2.geometry.coordinates];
+        const linestring = turf.lineString(line);
+        const buffered = turf.buffer(linestring, this.bufferDistance); //transform a line into a rectangle
+
+        var union = turf.union(buffered, poly1, poly2);
+
+        return union;
+    }
+
     async onPressPathMask() {
         console.log('PATH TO MASK');
 
-        const communesShape = await communesJSON.features.map((commune, i) => {
+        const communesShape = await this.state.communes.features.map((commune, i) => {
             if(commune.properties.NAMN == 'Crisnée'){
                 var poly1 = turf.polygon([commune.geometry.coordinates[0]]);
                 // var poly2 = turf.polygon([this.state.shape.geometry.coordinates]);
