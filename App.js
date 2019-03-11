@@ -17,6 +17,7 @@ import * as turf from '@turf/turf';
 import update from 'immutability-helper';
 import { point } from '@turf/helpers';
 import PositionButton from './src/components/PositionButton';
+import markerMyPosition from './src/img/marker.png';
 
 Mapbox.setAccessToken('pk.eyJ1IjoiY3ljcyIsImEiOiJjanN1anA2OWYwMGZtNGJrN3Y0ejJqOXpiIn0.q5gDP42dUSpQrUY0FyJiuw')
 
@@ -199,22 +200,23 @@ export default class App extends Component<Props> {
                 title="Mask Map"
                 color="#441583"
             />
-            <Button
+            {/* <Button
                 onPress={this.unionMultiPolygons.bind(this, this.state.unionRect.one, this.state.unionRect.two)}
                 title="Union multiPolygons"
                 color="#941584"
-            />
+            /> */}
             {/* <Text style={styles.instructions}>To get started, edit App.js</Text> */}
             {/* <Text style={styles.instructions}>{instructions}</Text> */}
             <Mapbox.MapView 
                 ref={(c)=> this._map = c}
                 styleURL={Mapbox.StyleURL.Dark} 
+                attributionEnabled={false}
                 zoomLevel={12} 
                 centerCoordinate={this.state.centerCoordinate.namur} 
                 style={styles.container}
                 logoEnabled={false}
                 rotateEnabled={false}
-                onDidFinishRenderingMapFully={() => this.onDidFinishRenderingMapFully()}
+                onDidFinishRenderingMapFully={this.onDidFinishRenderingMapFully}
                 onRegionIsChanging={this.onRegionIsChanging}
                 onRegionDidChange={this.onRegionDidChange}
                 onDidFinishRenderingFrameFully={this.onDidFinishRenderingFrameFully}
@@ -251,7 +253,7 @@ export default class App extends Component<Props> {
         const position = [this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude];
 
         const center = position;
-        const radius = 0.005;
+        const radius = 0.03;
         const options = {steps: 64, units: 'kilometers'};
         let circle = turf.circle(center, radius, options);
 
@@ -368,23 +370,34 @@ export default class App extends Component<Props> {
     showPosition() {
         // const coordinate = this.state.coordinates[counter];
         // const title = `Longitude: ${this.state.coordinates[counter][0]} Latitude: ${this.state.coordinates[counter][1]}`;
-        console.log('POSITIOOOON', this.state.lastPosition.coords);
+        console.log('POSITION', this.state.lastPosition.coords);
+        let shapePoint = turf.point([this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude]);
         return (
-          <Mapbox.PointAnnotation
-            key='myposition'
-            id='myposition'
-            title='Test'
-            coordinate={[this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude]}>
+        //   <Mapbox.PointAnnotation
+        //     key='myposition'
+        //     id='myposition'
+        //     title='My position'
+        //     coordinate={[this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude]}>
     
-            <Image
-            source={require('./src/img/marker.png')}
-            style={{
-              flex: 1,
-              resizeMode: 'contain',
-              width: 25,
-              height: 25
-              }}/>
-          </Mapbox.PointAnnotation>
+        //     <Image
+        //       source={require('./src/img/marker.png')}
+        //       style={{
+        //         flex: 1,
+        //         resizeMode: 'contain',
+        //         width: 25,
+        //         height: 25
+        //       }}/>
+        //   </Mapbox.PointAnnotation>
+          <Mapbox.ShapeSource
+            id='exampleShapeSource'
+            shape={shapePoint}
+          >
+            {/* <Mapbox.SymbolLayer style={mbStyles.icon}/> */}
+            <Mapbox.CircleLayer
+              id="singlePoint"
+              style={mbStyles.singlePoint}
+            />
+          </Mapbox.ShapeSource>
         );
     }
 
@@ -504,5 +517,17 @@ const mbStyles = Mapbox.StyleSheet.create({
         // fillAntialias: false,
         fillColor: 'rgba(251, 253, 255, 1)',
         fillOutlineColor: '#000',
-      }
+      },
+      icon: {
+        iconImage: '{markerMyPosition}',
+        iconSize: 1,
+      },
+      singlePoint: {
+        circleColor: 'hsl(200, 90%, 50%)',
+        circleOpacity: 0.84,
+        circleStrokeWidth: 2,
+        circleStrokeColor: 'white',
+        circleRadius: 10,
+        circlePitchAlignment: 'map',
+      },
 });
