@@ -8,7 +8,7 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, Button} from 'react-native';
+import {Platform, StyleSheet, Text, View, Button, Image} from 'react-native';
 import Mapbox from '@mapbox/react-native-mapbox-gl';
 import {name as appName} from './app.json';
 // import communesJSON from './communes-belges.json';
@@ -16,6 +16,7 @@ import communesJSON from './Communes-belgique.json';
 import * as turf from '@turf/turf';
 import update from 'immutability-helper';
 import { point } from '@turf/helpers';
+import PositionButton from './src/components/PositionButton';
 
 Mapbox.setAccessToken('pk.eyJ1IjoiY3ljcyIsImEiOiJjanN1anA2OWYwMGZtNGJrN3Y0ejJqOXpiIn0.q5gDP42dUSpQrUY0FyJiuw')
 
@@ -42,6 +43,7 @@ export default class App extends Component<Props> {
         /* State
         --------------------------------------------------------- */
         this.state = {
+          disabled: false,
           active: true,
           communes: communesJSON,
           centerCoordinate: {
@@ -76,8 +78,8 @@ export default class App extends Component<Props> {
             ],
             lastPosition: {
               coords: {
-                latitude: [0, 0],
-                longitude: [0, 0],
+                latitude: 50.4653347531125,
+                longitude: 4.856899587862423
               }
             },
             unionRect: {
@@ -127,6 +129,7 @@ export default class App extends Component<Props> {
 
         this.onRegionDidChange = this.onRegionDidChange.bind(this);
         this.onRegionWillChange = this.onRegionWillChange.bind(this);
+        this.flyToCurrentPosition = this.flyToCurrentPosition.bind(this);
     }
 
 
@@ -188,37 +191,50 @@ export default class App extends Component<Props> {
 
     return (
         <View style={styles.container}>
-        <Text style={styles.welcome}>Fogify</Text>
-        <Text>lat: {this.state.latitude}, lon: {this.state.longitude}</Text>
-        <Text>Last Position: [lat : {this.state.lastPosition ? this.state.lastPosition.coords.latitude : ''}, lon: { this.state.lastPosition ? this.state.lastPosition.coords.longitude : '' }]</Text>
-        <Button
-            onPress={this.onPressMaskMap.bind(this)}
-            title="Mask Map"
-            color="#441583"
-        />
-        <Button
-            onPress={this.unionMultiPolygons.bind(this, this.state.unionRect.one, this.state.unionRect.two)}
-            title="Union multiPolygons"
-            color="#941584"
-        />
-        {/* <Text style={styles.instructions}>To get started, edit App.js</Text> */}
-        {/* <Text style={styles.instructions}>{instructions}</Text> */}
-        <Mapbox.MapView 
-            ref={(c)=> this._map = c}
-            styleURL={Mapbox.StyleURL.Dark} 
-            zoomLevel={12} 
-            centerCoordinate={this.state.centerCoordinate.namur} 
-            style={styles.container}
-            logoEnabled={false}
-            rotateEnabled={false}
-            onDidFinishRenderingMapFully={() => this.onDidFinishRenderingMapFully()}
-            onRegionIsChanging={this.onRegionIsChanging}
-            onRegionDidChange={this.onRegionDidChange}
-            onRegionWillChange={this.onRegionWillChange}
-        >
-            {communesShape}
-        </Mapbox.MapView>
+            <Text style={styles.welcome}>Fogify</Text>
+            <Text>lat: {this.state.latitude}, lon: {this.state.longitude}</Text>
+            <Text>Last Position: [lat : {this.state.lastPosition ? this.state.lastPosition.coords.latitude : ''}, lon: { this.state.lastPosition ? this.state.lastPosition.coords.longitude : '' }]</Text>
+            <Button
+                onPress={this.onPressMaskMap.bind(this)}
+                title="Mask Map"
+                color="#441583"
+            />
+            <Button
+                onPress={this.unionMultiPolygons.bind(this, this.state.unionRect.one, this.state.unionRect.two)}
+                title="Union multiPolygons"
+                color="#941584"
+            />
+            {/* <Text style={styles.instructions}>To get started, edit App.js</Text> */}
+            {/* <Text style={styles.instructions}>{instructions}</Text> */}
+            <Mapbox.MapView 
+                ref={(c)=> this._map = c}
+                styleURL={Mapbox.StyleURL.Dark} 
+                zoomLevel={12} 
+                centerCoordinate={this.state.centerCoordinate.namur} 
+                style={styles.container}
+                logoEnabled={false}
+                rotateEnabled={false}
+                onDidFinishRenderingMapFully={() => this.onDidFinishRenderingMapFully()}
+                onRegionIsChanging={this.onRegionIsChanging}
+                onRegionDidChange={this.onRegionDidChange}
+                onDidFinishRenderingFrameFully={this.onDidFinishRenderingFrameFully}
+                onRegionWillChange={this.onRegionWillChange}
+            >
+                {communesShape}
+                {this.showPosition()}
+            </Mapbox.MapView>
+            <PositionButton disabled={this.state.disabled} isRipple onPress={this.flyToCurrentPosition.bind(this)} rippleColor="hsl(217, 100%, 70%)">
+                <Image
+                    source={require('./src/img/flytocurrentposition.png')}
+                    style={{
+                    flex: 1,
+                    resizeMode: 'contain',
+                    width: 25,
+                    height: 25
+                }}/>
+            </PositionButton>
         </View>
+        
     );
     }
 
@@ -330,6 +346,48 @@ export default class App extends Component<Props> {
         return this.isGC = commune.geometry.type === "GeometryCollection"; 
     }
 
+    async flyToCurrentPosition() {
+        this.setState({ 
+            disabled: true
+        })
+
+        const position = [this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude];
+
+        let flyTo = new Promise((resolve, reject) => {
+            this._map.flyTo(position, 4000); 
+            setTimeout(() => resolve(), 4000)
+        });
+
+        await flyTo;
+        
+        this.setState({ 
+            disabled: false
+        })
+    }
+
+    showPosition() {
+        // const coordinate = this.state.coordinates[counter];
+        // const title = `Longitude: ${this.state.coordinates[counter][0]} Latitude: ${this.state.coordinates[counter][1]}`;
+        console.log('POSITIOOOON', this.state.lastPosition.coords);
+        return (
+          <Mapbox.PointAnnotation
+            key='myposition'
+            id='myposition'
+            title='Test'
+            coordinate={[this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude]}>
+    
+            <Image
+            source={require('./src/img/marker.png')}
+            style={{
+              flex: 1,
+              resizeMode: 'contain',
+              width: 25,
+              height: 25
+              }}/>
+          </Mapbox.PointAnnotation>
+        );
+    }
+
     async onPressPathMask() {
         console.log('PATH TO MASK');
 
@@ -399,6 +457,10 @@ export default class App extends Component<Props> {
         console.log('onRegionIsChanging', this);
     }
 
+    onDidFinishRenderingFrameFully() {
+        console.log('onDidFinishRenderingFrameFully', this);
+    }
+
     async onRegionDidChange() {
         await console.log('onRegionDidChange this', this._map);
         const zoom = await this._map.getZoom();
@@ -440,7 +502,7 @@ const styles = StyleSheet.create({
 const mbStyles = Mapbox.StyleSheet.create({
     communes: {
         // fillAntialias: false,
-        fillColor: 'rgba(40, 65, 90, 1)',
-        fillOutlineColor: '#fff',
+        fillColor: 'rgba(251, 253, 255, 1)',
+        fillOutlineColor: '#000',
       }
 });
