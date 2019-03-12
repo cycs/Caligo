@@ -7,6 +7,10 @@ export default class PositionButton extends Component {
         
 
     }
+
+
+
+    
       /* Lifecycle methods
       --------------------------------------------------------- */
 
@@ -29,6 +33,9 @@ export default class PositionButton extends Component {
             </View>
         )
       }
+
+
+
 
       /* Methods
       --------------------------------------------------------- */
