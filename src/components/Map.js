@@ -17,8 +17,15 @@ import * as turf from '@turf/turf';
 import update from 'immutability-helper';
 import { point } from '@turf/helpers';
 import PositionButton from './PositionButton';
+import Completion from './Completion';
 import TabsNavigator from './tabsNavigator';
 import markerMyPosition from '../img/marker.png';
+import { connect } from 'react-redux';
+
+import { communesUpdate, communesCompletion } from '../actions';
+
+console.log('ACTIONS', { communesUpdate, communesCompletion })
+
 
 Mapbox.setAccessToken('pk.eyJ1IjoiY3ljcyIsImEiOiJjanN1anA2OWYwMGZtNGJrN3Y0ejJqOXpiIn0.q5gDP42dUSpQrUY0FyJiuw')
 
@@ -35,13 +42,12 @@ const instructions = Platform.select({
 // console.log(communes)
 
 type Props = {};
-export default class Map extends Component<Props> {
+class Map extends Component<Props> {
     constructor(props: Props) {
         super(props);
 
+        // console.log('PROPS MAP !!!', this.props.communesUpdate());
 
-
-        
         /* State
         --------------------------------------------------------- */
         this.state = {
@@ -123,6 +129,8 @@ export default class Map extends Component<Props> {
             }
         }
 
+        this.list = this.getList()
+
 
 
 
@@ -182,9 +190,9 @@ export default class Map extends Component<Props> {
     render() {
         // console.log(this.state)
         // console.log(communesJSON);
-        // console.log('this', turf);
+        console.log('this.PROOOPS', this.props);
 
-    const communesShape = this.state.communes.features.map((commune, i) => {
+    const communesShape = this.props.communes.features.map((commune, i) => {
         return (
         <Mapbox.ShapeSource key={commune.properties.SHN} id={commune.properties.SHN} shape={commune.geometry} tolerance={this.shapeSourceParams.tolerance}>
             <Mapbox.FillLayer id={commune.properties.SHN} style={mbStyles.communes} />
@@ -238,7 +246,6 @@ export default class Map extends Component<Props> {
                 }}/>
             </PositionButton>
         </View>
-        
     );
     }
 
@@ -255,12 +262,12 @@ export default class Map extends Component<Props> {
         const position = [this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude];
 
         const center = position;
-        const radius = 0.03;
+        const radius = 0.05;
         const options = {steps: 64, units: 'kilometers'};
         let circle = turf.circle(center, radius, options);
 
         console.log(position)
-        const communesShape = await this.state.communes.features.map((commune, i) => {
+        const communesShape = await this.props.communes.features.map((commune, i) => {
             const isInPolygon = this.isPositionInPolygon(position, commune)
             this.isGeometryCollection(commune);
 
@@ -298,13 +305,16 @@ export default class Map extends Component<Props> {
                 commune = mask;
                 console.log(this.state)
     
-                this.setState({
-                    communes: update(this.state.communes, {
-                        features: {
-                            [i]: {$set: mask}
-                        }
-                    })
-                  });
+                // this.setState({
+                //     communes: update(this.state.communes, {
+                //         features: {
+                //             [i]: {$set: mask}
+                //         }
+                //     })
+                //   });
+
+                this.props.communesUpdate(mask, i);
+                this.props.communesCompletion(mask, i);
             }
         })
     }
@@ -403,7 +413,24 @@ export default class Map extends Component<Props> {
         );
     }
 
+    getList() {
+        console.log("GET LOST", this.props)
+      const list = this.props.communes.features.map((commune) => {
+        return this.getArea(commune);
+      });
+  
+      return list;
+    }
+
     getArea(feature) {
+        if (
+            feature.properties.SHN == "BE421009" ||
+            feature.properties.SHN == "BE213002" ||
+            feature.properties.SHN == "BE233016"
+            )  {
+            return {area: 0, explored: 0, percentage: 0, name: feature.properties.NAMN}
+        }
+
         let polygon = feature.geometry.coordinates[0];
         let explored = 0;
         
@@ -419,7 +446,7 @@ export default class Map extends Component<Props> {
         const area = turf.area(polygon);
         const percentage = explored / area * 100;
         
-        console.log(area, explored, percentage);
+        // console.log(area, explored, percentage);
 
         return {
             area,
@@ -558,3 +585,17 @@ const mbStyles = Mapbox.StyleSheet.create({
         circlePitchAlignment: 'map',
       },
 });
+
+
+const mapStateToProps = state => {
+    console.log('MAPSTTE MAP', state)
+    return ({
+        communes: state.communes.communes,
+        list: state.list
+    })
+}
+
+// console.log({mapStateToProps, communesUpdate, communesCompletion})
+
+// export default connect(mapStateToProps, { communesUpdate, communesCompletion })(Map);
+export default connect(mapStateToProps, { communesUpdate, communesCompletion })(Map);
