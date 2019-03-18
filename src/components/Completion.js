@@ -3,6 +3,9 @@ import {FlatList, StyleSheet, Text, View, Button, Image} from 'react-native';
 import Map from 'Map';
 import { connect } from 'react-redux';
 import * as turf from '@turf/turf';
+import { SearchBar } from 'react-native-elements';
+import { filterList } from '../actions';
+
 
 
 class Completion extends React.Component {
@@ -10,8 +13,10 @@ class Completion extends React.Component {
     super(props);
 
     this.state = {
-        // list: this.sortList(this.getList())
+        searchInput: ''
     }
+
+    this.listholder = this.props.list
   }
 
   /* Lifecycle Methods
@@ -25,6 +30,12 @@ class Completion extends React.Component {
     console.log("componentDidUpdate COMPLETION")
     console.log('prevProps', prevProps);
     // console.log('props', this.state.list);
+
+    console.log('FILTERED LIST', {
+        source: this.props.list.source[375], 
+        filter: this.props.list.filter[375], 
+    })
+    // this.listholder = this.props.list; // Keeps the list updated
   }
 
   render() {
@@ -34,10 +45,10 @@ class Completion extends React.Component {
       
     return (
       <View style={completionStyles.container}>
-          {/* <Text style={completionStyles.title}>Score</Text> */}
           <FlatList
             ItemSeparatorComponent={this.renderSeparator}
-            data={this.sortList(this.props.list)}
+            data={this.sortList(this.props.list.filter)}
+            ListHeaderComponent={this.searchList}
             renderItem={({item}) => {
                 // const percent = `${item.percentage.toFixed(2)}%`;
                 const percent = `${item.percentage}%`;
@@ -116,8 +127,35 @@ class Completion extends React.Component {
 
     return newList;
   }
-}
+ 
+  searchList = () => {    
+    return (      
+      <SearchBar        
+        placeholder="Recherche..."        
+        lightTheme        
+        onChangeText={text => this.searchFilterFunction(text)}
+        value={this.state.searchInput}
+        autoCorrect={false}             
+      />    
+    );  
+  }
 
+  searchFilterFunction = text => {
+      this.setState({searchInput: text})
+    console.log(text)
+    this.props.filterList(text)
+
+    // const newData = this.arrayholder.filter(item => {      
+    //     const itemData = `${item.name.title.toUpperCase()}   
+    //     ${item.name.first.toUpperCase()} ${item.name.last.toUpperCase()}`;
+    //      const textData = text.toUpperCase();
+          
+    //      return itemData.indexOf(textData) > -1;    
+    //   });    
+    //   this.setState({ data: newData });  
+  }
+
+}
 
 /* STYLES
 ---------------------------------------------------------------------------------------------------- */
@@ -170,4 +208,4 @@ const mapStateToProps = state => {
     return state;
 }
 
-export default connect(mapStateToProps, null)(Completion);
+export default connect(mapStateToProps, { filterList })(Completion);

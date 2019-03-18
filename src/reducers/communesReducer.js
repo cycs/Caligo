@@ -3,7 +3,7 @@ import update from 'immutability-helper';
 import * as turf from '@turf/turf';
 
 function getList(communes) {
-    console.log('TIS PROPS GET LIST',this.props)
+    // console.log('TIS PROPS GET LIST',this.props)
   const list = communes.map((commune) => {
     return getArea(commune);
   });
@@ -55,7 +55,6 @@ const initialState = {
 // console.log('COMMUNES REDUCER LIST', list)
 
 export default function communesReducer(state = initialState, { type, mask, i }) {
-    console.log('COMMUNE REDUCER', {state, type, mask, i});
     switch(type) {
         case 'COMMUNESUPDATE':
         console.log('COMMUNESUPDATE', {mask, i});

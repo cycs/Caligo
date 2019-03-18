@@ -15,3 +15,10 @@ export const communesCompletion = (mask, i) => {
         i
     }
 }   
+
+export const filterList = (text) => {
+    return {
+        type: 'COMPLETIONFILTER',
+        text
+    }
+}

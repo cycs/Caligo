@@ -3,7 +3,7 @@ import update from 'immutability-helper';
 import * as turf from '@turf/turf';
 
 function getList(communes) {
-    console.log('TIS PROPS GET LIST',this.props)
+    // console.log('TIS PROPS GET LIST',this.props)
   const list = communes.map((commune, i) => {
     return getArea(commune, i);
   });
@@ -53,24 +53,61 @@ const obj = {
     ]
 }
 
-const initialState = getList(communesJSON.features);
+const initialState = {
+    source: getList(communesJSON.features),
+    filter: getList(communesJSON.features)
+};
 
-export default function listReducer(state = initialState, { type, mask, i }) {
-    console.log('LIST REDUCER', {type, state, mask, i});
+export default function listReducer(state = initialState, { type, mask, i, text }) {
     switch(type) {
         case 'COMPLETIONUPDATE':
             console.log('COMPLETIONUPDATE', {state, i, mask});
 
-            const index = state.reduce((acc, curr, ind) => {
+            const indexSource = state.source.reduce((acc, curr, ind) => {
                 if (curr.id == i) {
                     acc = ind
                 }
                 return acc;
             }, 0);
+            
+            const indexFilter = state.filter.reduce((acc, curr, ind) => {
+                console.log(curr, i, ind)
+                if (curr.id == i) {
+                    acc = ind
+                }
+                return acc;
+            }, null);
+
+            if(!indexFilter) {
+                return update(state, {
+                    source: {
+                        [indexSource]: { $set: getArea(mask, i) }
+                    }
+                })
+            }
 
             return update(state, {
-                [index]: { $set: getArea(mask, i) }
+                source: {
+                    [indexSource]: { $set: getArea(mask, i) }
+                },
+                filter: {
+                    [indexFilter]: { $set: getArea(mask, i) }
+                }
             });
+        case 'COMPLETIONFILTER':
+            console.log(state)
+
+            const copy = state.source;
+            const newState = copy.filter(item => {
+                console.log(text)
+                return item.name.indexOf(text) > -1;
+            });
+
+            return {
+                source: state.source,
+                filter: newState
+            };;
+
     }
     
     return state;
