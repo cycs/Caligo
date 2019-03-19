@@ -45,10 +45,10 @@ class Completion extends React.Component {
       
     return (
       <View style={completionStyles.container}>
+            {this.searchList()}
           <FlatList
             ItemSeparatorComponent={this.renderSeparator}
             data={this.sortList(this.props.list.filter)}
-            ListHeaderComponent={this.searchList}
             renderItem={({item}) => {
                 // const percent = `${item.percentage.toFixed(2)}%`;
                 const percent = `${item.percentage}%`;

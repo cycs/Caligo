@@ -1,4 +1,5 @@
-import communesJSON from '../../Communes-belgique.json';
+// import communesJSON from '../../Communes-belgique.json';
+import communesJSON from '../../communes-minify.json';
 import update from 'immutability-helper';
 import * as turf from '@turf/turf';
 
