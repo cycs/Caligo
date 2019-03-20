@@ -54,6 +54,8 @@ const obj = {
     ]
 }
 
+const communesList = getList(communesJSON.features);
+
 const initialState = {
     source: getList(communesJSON.features),
     filter: getList(communesJSON.features)
@@ -72,7 +74,7 @@ export default function listReducer(state = initialState, { type, mask, i, text 
             }, 0);
             
             const indexFilter = state.filter.reduce((acc, curr, ind) => {
-                console.log(curr, i, ind)
+                // console.log(curr, i, ind)
                 if (curr.id == i) {
                     acc = ind
                 }

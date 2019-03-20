@@ -17,12 +17,15 @@ import * as turf from '@turf/turf';
 import update from 'immutability-helper';
 import { point } from '@turf/helpers';
 import PositionButton from './PositionButton';
+import CreateCommunes from '../graphql/createCommunes';
 import Completion from './Completion';
 import TabsNavigator from './tabsNavigator';
 import markerMyPosition from '../img/marker.png';
 import { connect } from 'react-redux';
 
-import { communesUpdate, communesCompletion } from '../actions';
+import { communesUpdate, communesCompletion, fetchData } from '../actions';
+
+import Queries from './queries';
 
 console.log('ACTIONS', { communesUpdate, communesCompletion })
 
@@ -40,6 +43,11 @@ const instructions = Platform.select({
 // console.log(Mapbox.getAccessToken().then((res) => {console.log('res', res)}));
 // console.log(Mapbox.StyleURL.Street)
 // console.log(communes)
+
+communesJSON.features.map((com) => {
+    const str = JSON.stringify(com);
+    // console.log(str)
+})
 
 type Props = {};
 class Map extends Component<Props> {
@@ -152,6 +160,8 @@ class Map extends Component<Props> {
         console.log("DID MOUNT");  
         // console.log(this);  
 
+        this.props.fetchData()
+
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 console.log('coords', position.coords)
@@ -190,7 +200,15 @@ class Map extends Component<Props> {
     render() {
         // console.log(this.state)
         // console.log(communesJSON);
-        console.log('this.PROOOPS', this.props);
+        console.log('this.PROOOPS', this.props.loading);
+        if (this.props.loading) {
+            return (
+                <View style={styles.loadingContainer}>
+                    <Text style={styles.loading}>loading...</Text>
+                </View>
+            )
+        }
+        console.log('HAS LOADED');
 
     const communesShape = this.props.communes.features.map((commune, i) => {
         return (
@@ -201,10 +219,12 @@ class Map extends Component<Props> {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.welcome}>Fogify</Text>
+            {/* <Text style={styles.welcome}>Fogify</Text> */}
             <Text>lat: {this.state.latitude}, lon: {this.state.longitude}</Text>
             <Text>Last Position: [lat : {this.state.lastPosition ? this.state.lastPosition.coords.latitude : ''}, lon: { this.state.lastPosition ? this.state.lastPosition.coords.longitude : '' }]</Text>
-            <Button
+            <Queries/>
+            {/* <CreateCommunes/> */}
+            {/* <Button
                 onPress={this.onPressMaskMap.bind(this)}
                 title="Mask Map"
                 color="#441583"
@@ -214,7 +234,7 @@ class Map extends Component<Props> {
                 onPress={this.getArea.bind(this, this.state.communes.features[314])}
                 title="Get area Namur"
                 color="#941584"
-            />
+            /> */}
             {/* <Text style={styles.instructions}>To get started, edit App.js</Text> */}
             {/* <Text style={styles.instructions}>{instructions}</Text> */}
             <Mapbox.MapView 
@@ -258,6 +278,8 @@ class Map extends Component<Props> {
     async drawCircle(state) {
         console.log('draw circle state', state);
         console.log(this.state.communes)
+
+        if(this.props.loading) return false; // prevents drawing before list of municipalities has been loaded
 
         const position = [this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude];
 
@@ -554,16 +576,21 @@ const styles = StyleSheet.create({
     // alignItems: 'center',
     // backgroundColor: '#F5FCFF',
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // backgroundColor: '#F5FCFF',
+  },
   welcome: {
     fontSize: 20,
     textAlign: 'center',
     margin: 10,
   },
-//   instructions: {
-//     textAlign: 'center',
-//     color: '#333333',
-//     marginBottom: 5,
-//   }
+  loading: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });
 
 const mbStyles = Mapbox.StyleSheet.create({
@@ -591,11 +618,13 @@ const mapStateToProps = state => {
     console.log('MAPSTTE MAP', state)
     return ({
         communes: state.communes.communes,
-        list: state.list
+        list: state.list,
+        loading: state.communes.loading,
+        error: state.communes.error
     })
 }
 
 // console.log({mapStateToProps, communesUpdate, communesCompletion})
 
 // export default connect(mapStateToProps, { communesUpdate, communesCompletion })(Map);
-export default connect(mapStateToProps, { communesUpdate, communesCompletion })(Map);
+export default connect(mapStateToProps, { fetchData, communesUpdate, communesCompletion })(Map);

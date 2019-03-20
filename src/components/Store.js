@@ -23,7 +23,7 @@ const allReducers = combineReducers({
 // const store = createStore(communesReducer, applyMiddleware(...middleware));
 
 // const store = createStore(communesReducer);
-const store = createStore(allReducers);
+const store = createStore(allReducers, applyMiddleware(...middleware));
 
 // console.log('STORE GETSTATE', store.getState());
 

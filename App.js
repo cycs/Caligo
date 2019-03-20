@@ -5,18 +5,27 @@ import Tab from './src/components/tabsNavigator';
 import { connect } from 'react-redux';
 import store from './src/components/Store';
 import { Provider } from 'react-redux';
+import { createStackNavigator, createAppContainer } from 'react-navigation';
 
+// console.log(createStackNavigator);
 
 class App extends React.Component {
+    static navigationOptions = {
+        title: 'Fogify',
+      };
+
     render() {
-        // console.log('THIS DOT PROPS', this.props)
       return (
-    <Provider store={store}>
-        <Tab/>
-    </Provider>
+            <Tab/>
       )
     }
   }
 
+const AppStackNavigator = createStackNavigator({
+    Home: {
+        screen: App,
+    }
+});
 
-export default App;
+export default createAppContainer(AppStackNavigator);
+

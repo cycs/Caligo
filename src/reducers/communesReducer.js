@@ -1,64 +1,70 @@
 // import communesJSON from '../../Communes-belgique.json';
 import communesJSON from '../../communes-minify.json';
 import update from 'immutability-helper';
-import * as turf from '@turf/turf';
+import { request } from 'graphql-request'
 
-function getList(communes) {
-    // console.log('TIS PROPS GET LIST',this.props)
-  const list = communes.map((commune) => {
-    return getArea(commune);
-  });
-
-  return list;
-}
-
-function getArea(feature) {
-    // console.log(feature);
-    if (
-        feature.properties.SHN == "BE421009" ||
-        feature.properties.SHN == "BE213002" ||
-        feature.properties.SHN == "BE233016"
-        )  {
-        return {area: 0, explored: 0, percentage: 0, name: feature.properties.NAMN}
+const query = `{
+    allCommuneses {
+        id, 
+        data
     }
-  let polygon = feature.geometry.coordinates[0];
-  let explored = 0;
+}`
   
-  if (feature.geometry.coordinates.length > 1) {
-      polygon = feature.geometry.coordinates[1]
-      
-      const  polygonExplored = turf.polygon([feature.geometry.coordinates[0]]);
-      explored = turf.area(polygonExplored);
-  }
+request('https://api.graph.cool/simple/v1/cjtfy59zu7gaj0138jz9a1xon', query)
+    .then(data => {
+        console.log(data);
+        const json = {
+            type: "FeatureCollection",
+            features: [
+                ... data.allCommuneses.map((com) => JSON.parse(com.data))
+            ]
+        }
 
-  polygon = turf.polygon([polygon]);
-
-  const area = turf.area(polygon);
-  const percentage = explored / area * 100;
-  const name = feature.properties.NAMN;
-  
-  // console.log(area, explored, percentage, name);
-
-  return {
-      area,
-      explored,
-      percentage,
-      name
-  }
-}
-
-// const list = getList(communesJSON.features);
+        console.log(json);
+        return json;
+    })
 
 const initialState = {
+    isFetching: false,
     communes: communesJSON
 }
+console.log(communesJSON);
 
-// console.log('COMMUNES REDUCER LIST', list)
-
-export default function communesReducer(state = initialState, { type, mask, i }) {
+export default function communesReducer(state = initialState, { type, mask, i, data, loading, error }) {
+    console.log('COMMUNESUPDATE TOP', state);
+    
     switch(type) {
+        case "REQUEST_DATA":
+            return {
+                ...state,
+                loading: loading,
+                communes: []
+            }
+        case "REQUEST_DATA_SUCCESS":
+            return {
+                ...state,
+                loading: loading,
+                communes: data
+            }
+        case "REQUEST_DATA_ERROR":
+            return {
+                ...state,
+                loading: loading,
+                error: error
+            }
+        case 'REQUEST_INITIAL': 
+            return {
+                ...state,
+                isFetching: true,
+            };
+        case 'GET_DATA_FIRST': 
+            return {
+                ...state,
+                isFetching: false,
+                communes: myData
+            };
         case 'COMMUNESUPDATE':
-        console.log('COMMUNESUPDATE', {mask, i});
+        console.log('COMMUNESUPDATE', {state, mask, i});
             return update(state, {
                 communes: {
                     features: {
