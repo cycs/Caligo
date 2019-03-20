@@ -44,10 +44,10 @@ const instructions = Platform.select({
 // console.log(Mapbox.StyleURL.Street)
 // console.log(communes)
 
-communesJSON.features.map((com) => {
-    const str = JSON.stringify(com);
-    // console.log(str)
-})
+// communesJSON.features.map((com) => {
+//     const str = JSON.stringify(com);
+//     // console.log(str)
+// })
 
 type Props = {};
 class Map extends Component<Props> {
@@ -137,7 +137,7 @@ class Map extends Component<Props> {
             }
         }
 
-        this.list = this.getList()
+        // this.list = this.getList()
 
 
 

@@ -16,7 +16,6 @@ export const fetchData = () => dispatch => {
                 features: [
                     ... data.allCommuneses.map((com) => JSON.parse(com.data))
                 ],
-                hasFetched: true,
             }
 
             console.log(json);    

@@ -25,10 +25,10 @@ request('https://api.graph.cool/simple/v1/cjtfy59zu7gaj0138jz9a1xon', query)
     })
 
 const initialState = {
-    isFetching: false,
-    communes: communesJSON
+    communes: [],
+    loading: true
 }
-console.log(communesJSON);
+// console.log(communesJSON);
 
 export default function communesReducer(state = initialState, { type, mask, i, data, loading, error }) {
     console.log('COMMUNESUPDATE TOP', state);
