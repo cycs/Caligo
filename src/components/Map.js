@@ -323,9 +323,13 @@ class Map extends Component<Props> {
     
                 mask.properties.SHN = commune.properties.SHN
                 mask.properties.NAMN = commune.properties.NAMN
-    
-                commune = mask;
+                mask.id = commune.id;
+                
+                console.log(commune)
+                // commune = mask;
                 console.log(this.state)
+                console.log(mask)
+                const id = commune.id;
     
                 // this.setState({
                 //     communes: update(this.state.communes, {
@@ -335,7 +339,7 @@ class Map extends Component<Props> {
                 //     })
                 //   });
 
-                this.props.communesUpdate(mask, i);
+                this.props.communesUpdate(mask, i, id);
                 this.props.communesCompletion(mask, i);
             }
         })

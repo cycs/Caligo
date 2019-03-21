@@ -11,7 +11,7 @@ class CreateCommunes extends Component {
     newDB = () => {
         console.log('MUTAAAAAAAAAAAAAAAAATIONOOOOOOOOOOOOOONN', this.props);
 
-        communesJSON.features.map((com) => {
+        communesJSON.features.map((com, i) => {
             const commune = JSON.stringify(com);
 
             this.props.newDatabase({

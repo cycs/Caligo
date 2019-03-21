@@ -47,8 +47,11 @@ export default function communesReducer(state = initialState, { type, mask, i, d
                 communes: data
             }
         case "REQUEST_DATA_ERROR":
+        console.log('error', state)
             return {
                 ...state,
+                // communes: communesJSON,
+                communes: [],
                 loading: loading,
                 error: error
             }
