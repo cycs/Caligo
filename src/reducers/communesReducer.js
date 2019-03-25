@@ -10,25 +10,24 @@ const query = `{
     }
 }`
   
-request('https://api.graph.cool/simple/v1/cjtfy59zu7gaj0138jz9a1xon', query)
-    .then(data => {
-        console.log(data);
-        const json = {
-            type: "FeatureCollection",
-            features: [
-                ... data.allCommuneses.map((com) => JSON.parse(com.data))
-            ]
-        }
+// request('https://api.graph.cool/simple/v1/cjtfy59zu7gaj0138jz9a1xon', query)
+//     .then(data => {
+//         const json = {
+//             type: "FeatureCollection",
+//             features: [
+//                 ... data.allCommuneses.map((com) => JSON.parse(com.data))
+//             ]
+//         }
 
-        console.log(json);
-        return json;
-    })
+//         console.log(data, json);
+
+//         return json;
+//     })
 
 const initialState = {
     communes: [],
     loading: true
 }
-// console.log(communesJSON);
 
 export default function communesReducer(state = initialState, { type, mask, i, data, loading, error }) {
     console.log('COMMUNESUPDATE TOP', state);
@@ -47,10 +46,9 @@ export default function communesReducer(state = initialState, { type, mask, i, d
                 communes: data
             }
         case "REQUEST_DATA_ERROR":
-        console.log('error', state)
+            console.log('error', state)
             return {
                 ...state,
-                // communes: communesJSON,
                 communes: [],
                 loading: loading,
                 error: error
@@ -67,7 +65,7 @@ export default function communesReducer(state = initialState, { type, mask, i, d
                 communes: myData
             };
         case 'COMMUNESUPDATE':
-        console.log('COMMUNESUPDATE', {state, mask, i});
+            console.log('COMMUNESUPDATE', {state, mask, i});
             return update(state, {
                 communes: {
                     features: {

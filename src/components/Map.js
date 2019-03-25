@@ -32,29 +32,12 @@ console.log('ACTIONS', { communesUpdate, communesCompletion })
 
 Mapbox.setAccessToken('pk.eyJ1IjoiY3ljcyIsImEiOiJjanN1anA2OWYwMGZtNGJrN3Y0ejJqOXpiIn0.q5gDP42dUSpQrUY0FyJiuw')
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
-
-// console.log("mb", Mapbox);
-// console.log(Mapbox.getAccessToken().then((res) => {console.log('res', res)}));
-// console.log(Mapbox.StyleURL.Street)
-// console.log(communes)
-
-// communesJSON.features.map((com) => {
-//     const str = JSON.stringify(com);
-//     // console.log(str)
-// })
-
-type Props = {};
-class Map extends Component<Props> {
-    constructor(props: Props) {
+class Map extends Component {
+    constructor(props) {
         super(props);
+        console.log(props)
 
-        // console.log('PROPS MAP !!!', this.props.communesUpdate());
+
 
         /* State
         --------------------------------------------------------- */
@@ -137,8 +120,6 @@ class Map extends Component<Props> {
             }
         }
 
-        // this.list = this.getList()
-
 
 
 
@@ -158,13 +139,12 @@ class Map extends Component<Props> {
 
     componentDidMount() {
         console.log("DID MOUNT");  
-        // console.log(this);  
+        console.log(this);  
 
         this.props.fetchData()
 
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                console.log('coords', position.coords)
               this.setState({ 
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude,
@@ -172,12 +152,12 @@ class Map extends Component<Props> {
               })
             },
             (error) => { console.log(error) },
-            { enableHighAccuracy: true, timeout: 30000, maximumAge: 3000 }
+            { enableHighAccuracy: true, timeout: 20000, maximumAge: 2000 }
           )
 
           this.watchPosition = navigator.geolocation.watchPosition(
             (lastPosition) => {
-                console.log(lastPosition);
+                // console.log(lastPosition);
               this.setState({lastPosition});
               this.drawCircle(lastPosition);
             },
@@ -189,7 +169,6 @@ class Map extends Component<Props> {
 
     componentDidUpdate(prevProps, prevState) {
         console.log("componentDidUpdate")
-        console.log('prevState', prevState);
     }
 
     componentWillUnmount() {
@@ -198,9 +177,6 @@ class Map extends Component<Props> {
 
     
     render() {
-        // console.log(this.state)
-        // console.log(communesJSON);
-        console.log('this.PROOOPS', this.props.loading);
         if (this.props.loading) {
             return (
                 <View style={styles.loadingContainer}>
@@ -210,63 +186,59 @@ class Map extends Component<Props> {
         }
         console.log('HAS LOADED');
 
-    const communesShape = this.props.communes.features.map((commune, i) => {
-        return (
-        <Mapbox.ShapeSource key={commune.properties.SHN} id={commune.properties.SHN} shape={commune.geometry} tolerance={this.shapeSourceParams.tolerance}>
-            <Mapbox.FillLayer id={commune.properties.SHN} style={mbStyles.communes} />
-        </Mapbox.ShapeSource>)
-    })
+        const communesShape = this.props.communes.features.map((commune, i) => {
+            return (
+            <Mapbox.ShapeSource key={commune.properties.SHN} id={commune.properties.SHN} shape={commune.geometry} tolerance={this.shapeSourceParams.tolerance}>
+                <Mapbox.FillLayer id={commune.properties.SHN} style={mbStyles.communes} />
+            </Mapbox.ShapeSource>)
+        })
 
-    return (
-        <View style={styles.container}>
-            {/* <Text style={styles.welcome}>Fogify</Text> */}
-            <Text>lat: {this.state.latitude}, lon: {this.state.longitude}</Text>
-            <Text>Last Position: [lat : {this.state.lastPosition ? this.state.lastPosition.coords.latitude : ''}, lon: { this.state.lastPosition ? this.state.lastPosition.coords.longitude : '' }]</Text>
-            <Queries/>
-            {/* <CreateCommunes/> */}
-            {/* <Button
-                onPress={this.onPressMaskMap.bind(this)}
-                title="Mask Map"
-                color="#441583"
-            />
-            <Button
-                // onPress={this.unionMultiPolygons.bind(this, this.state.unionRect.one, this.state.unionRect.two)}
-                onPress={this.getArea.bind(this, this.state.communes.features[314])}
-                title="Get area Namur"
-                color="#941584"
-            /> */}
-            {/* <Text style={styles.instructions}>To get started, edit App.js</Text> */}
-            {/* <Text style={styles.instructions}>{instructions}</Text> */}
-            <Mapbox.MapView 
-                ref={(c)=> this._map = c}
-                styleURL={Mapbox.StyleURL.Dark} 
-                attributionEnabled={false}
-                zoomLevel={12} 
-                centerCoordinate={this.state.centerCoordinate.namur} 
-                style={styles.container}
-                logoEnabled={false}
-                rotateEnabled={false}
-                onDidFinishRenderingMapFully={this.onDidFinishRenderingMapFully}
-                onRegionIsChanging={this.onRegionIsChanging}
-                onRegionDidChange={this.onRegionDidChange}
-                onDidFinishRenderingFrameFully={this.onDidFinishRenderingFrameFully}
-                onRegionWillChange={this.onRegionWillChange}
-            >
-                {communesShape}
-                {this.showPosition()}
-            </Mapbox.MapView>
-            <PositionButton disabled={this.state.disabled} isRipple onPress={this.flyToCurrentPosition.bind(this)} rippleColor="hsl(217, 100%, 70%)">
-                <Image
-                    source={require('../img/flytocurrentposition.png')}
-                    style={{
-                    flex: 1,
-                    resizeMode: 'contain',
-                    width: 25,
-                    height: 25
-                }}/>
-            </PositionButton>
-        </View>
-    );
+        return (
+            <View style={styles.container}>
+                <Text>lat: {this.state.latitude}, lon: {this.state.longitude}</Text>
+                <Text>Last Position: [lat : {this.state.lastPosition ? this.state.lastPosition.coords.latitude : ''}, lon: { this.state.lastPosition ? this.state.lastPosition.coords.longitude : '' }]</Text>
+                {/* <CreateCommunes/> */}
+                {/* <Button
+                    onPress={this.onPressMaskMap.bind(this)}
+                    title="Mask Map"
+                    color="#441583"
+                />
+                <Button
+                    // onPress={this.unionMultiPolygons.bind(this, this.state.unionRect.one, this.state.unionRect.two)}
+                    onPress={this.getArea.bind(this, this.state.communes.features[314])}
+                    title="Get area Namur"
+                    color="#941584"
+                /> */}
+                <Mapbox.MapView 
+                    ref={(c)=> this._map = c}
+                    styleURL={Mapbox.StyleURL.Dark} 
+                    attributionEnabled={false}
+                    zoomLevel={12} 
+                    centerCoordinate={this.state.centerCoordinate.namur} 
+                    style={styles.container}
+                    logoEnabled={false}
+                    rotateEnabled={false}
+                    onDidFinishRenderingMapFully={this.onDidFinishRenderingMapFully}
+                    onRegionIsChanging={this.onRegionIsChanging}
+                    onRegionDidChange={this.onRegionDidChange}
+                    onDidFinishRenderingFrameFully={this.onDidFinishRenderingFrameFully}
+                    onRegionWillChange={this.onRegionWillChange}
+                >
+                    {communesShape}
+                    {this.showPosition()}
+                </Mapbox.MapView>
+                <PositionButton disabled={this.state.disabled} isRipple onPress={this.flyToCurrentPosition.bind(this)} rippleColor="hsl(217, 100%, 70%)">
+                    <Image
+                        source={require('../img/flytocurrentposition.png')}
+                        style={{
+                        flex: 1,
+                        resizeMode: 'contain',
+                        width: 25,
+                        height: 25
+                    }}/>
+                </PositionButton>
+            </View>
+        );
     }
 
 
@@ -277,67 +249,41 @@ class Map extends Component<Props> {
 
     async drawCircle(state) {
         console.log('draw circle state', state);
-        console.log(this.state.communes)
 
-        if(this.props.loading) return false; // prevents drawing before list of municipalities has been loaded
+        if (this.props.loading) return false; // prevents drawing before list of municipalities has been loaded
 
         const position = [this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude];
 
         const center = position;
         const radius = 0.05;
         const options = {steps: 64, units: 'kilometers'};
+
         let circle = turf.circle(center, radius, options);
 
-        console.log(position)
         const communesShape = await this.props.communes.features.map((commune, i) => {
             const isInPolygon = this.isPositionInPolygon(position, commune)
             this.isGeometryCollection(commune);
 
-            console.log(isInPolygon);
-            if(i == 314) {
-                console.log('namur', commune)
-            }
-            // console.log(this.isGC);
-
             if (isInPolygon) {
-                console.log(i)
-
-                console.log(commune.geometry.coordinates)
-                // this.unionPolygons(commune.geometry.coordinates[1], circle)
-
                 let coords = commune.geometry.coordinates[0]
 
                 if (commune.geometry.coordinates.length === 2) { // if 2 arrays, then the first is a mask
                     coords = commune.geometry.coordinates[1];
-                    const actualMask = turf.polygon([commune.geometry.coordinates[0]]);
 
+                    const actualMask = turf.polygon([commune.geometry.coordinates[0]]);
                     const intersection = turf.intersect(actualMask, circle);
 
                     circle = intersection ? this.unionPolygons(actualMask, circle) : this.unionMultiPolygons(actualMask, circle);
                 }
-                var poly1 = turf.polygon([coords]);
-                // var poly2 = turf.polygon([this.state.shape.geometry.coordinates]);
-    
-                var mask = turf.mask(poly1, circle);
-                // console.log('mask', mask)
+                const poly1 = turf.polygon([coords]);
+                const mask = turf.mask(poly1, circle);
     
                 mask.properties.SHN = commune.properties.SHN
                 mask.properties.NAMN = commune.properties.NAMN
                 mask.id = commune.id;
                 
-                console.log(commune)
-                // commune = mask;
-                console.log(this.state)
-                console.log(mask)
+                console.log(commune, mask, this.state)
                 const id = commune.id;
-    
-                // this.setState({
-                //     communes: update(this.state.communes, {
-                //         features: {
-                //             [i]: {$set: mask}
-                //         }
-                //     })
-                //   });
 
                 this.props.communesUpdate(mask, i, id);
                 this.props.communesCompletion(mask, i);
@@ -346,17 +292,12 @@ class Map extends Component<Props> {
     }
 
     unionPolygons(poly1, poly2) {
-        // const union1 = turf.polygon([poly1]);
-        // const union2 = turf.polygon([poly2.geometry.coordinates[0]]);
-        
-        // const circle = poly2.geometry.coordinates;
         const union = turf.union(poly1, poly2);
 
         return union;
     }
 
     unionMultiPolygons(poly1, poly2) {
-        console.log(poly1, poly2)
         this.bufferDistance =  0.000001 //in kilometers
           
         const pointOnPolygon1 = turf.pointOnFeature(poly1);
@@ -406,31 +347,13 @@ class Map extends Component<Props> {
     }
 
     showPosition() {
-        // const coordinate = this.state.coordinates[counter];
-        // const title = `Longitude: ${this.state.coordinates[counter][0]} Latitude: ${this.state.coordinates[counter][1]}`;
         console.log('POSITION', this.state.lastPosition.coords);
         let shapePoint = turf.point([this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude]);
         return (
-        //   <Mapbox.PointAnnotation
-        //     key='myposition'
-        //     id='myposition'
-        //     title='My position'
-        //     coordinate={[this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude]}>
-    
-        //     <Image
-        //       source={require('./src/img/marker.png')}
-        //       style={{
-        //         flex: 1,
-        //         resizeMode: 'contain',
-        //         width: 25,
-        //         height: 25
-        //       }}/>
-        //   </Mapbox.PointAnnotation>
           <Mapbox.ShapeSource
             id='exampleShapeSource'
             shape={shapePoint}
           >
-            {/* <Mapbox.SymbolLayer style={mbStyles.icon}/> */}
             <Mapbox.CircleLayer
               id="singlePoint"
               style={mbStyles.singlePoint}
@@ -440,8 +363,8 @@ class Map extends Component<Props> {
     }
 
     getList() {
-        console.log("GET LOST", this.props)
-      const list = this.props.communes.features.map((commune) => {
+        console.log("GET LIST", this.props)
+        const list = this.props.communes.features.map((commune) => {
         return this.getArea(commune);
       });
   
@@ -472,8 +395,6 @@ class Map extends Component<Props> {
         const area = turf.area(polygon);
         const percentage = explored / area * 100;
         
-        // console.log(area, explored, percentage);
-
         return {
             area,
             explored,
@@ -486,23 +407,18 @@ class Map extends Component<Props> {
 
         const communesShape = await this.state.communes.features.map((commune, i) => {
             if(commune.properties.NAMN == 'Crisnée'){
-                var poly1 = turf.polygon([commune.geometry.coordinates[0]]);
-                // var poly2 = turf.polygon([this.state.shape.geometry.coordinates]);
+                const poly1 = turf.polygon([commune.geometry.coordinates[0]]);
 
                 const line = turf.lineString(this.state.travel);
                 const polygon = turf.lineToPolygon(line);
 
                 const multiPolygon = turf.multiPolygon(this.state.travel);
-                console.log('multiPolygon', multiPolygon);
 
-                var mask = turf.mask(poly1, multiPolygon);
-                // console.log('mask', mask)
+                const mask = turf.mask(poly1, multiPolygon);
     
                 mask.properties.SHN = commune.properties.SHN
     
                 commune = mask;
-                console.log(this.state)
-                console.log('mask', mask)
     
                 this.setState({
                     communes: update(this.state.communes, {
@@ -516,15 +432,12 @@ class Map extends Component<Props> {
     }
     
     async onPressMaskMap() {
-        console.log('MASK THE FREAKING MAP')
-        console.log(this.state)
         const communesShape = await communesJSON.features.map((commune, i) => {
             if(commune.properties.NAMN == 'Crisnée'){
                 var poly1 = turf.polygon([commune.geometry.coordinates[0]]);
                 var poly2 = turf.polygon([this.state.shape.geometry.coordinates]);
     
                 var mask = turf.mask(poly1, poly2);
-                // console.log('mask', mask)
     
                 mask.properties.SHN = commune.properties.SHN
     
@@ -543,26 +456,22 @@ class Map extends Component<Props> {
     }
 
     onDidFinishRenderingMapFully() {
-        console.log('onDidFinishRenderingMapFully', this);
+        // console.log('onDidFinishRenderingMapFully', this);
     }
 
     onRegionIsChanging() {
-        console.log('onRegionIsChanging', this);
+        // console.log('onRegionIsChanging', this);
     }
 
     onDidFinishRenderingFrameFully() {
-        console.log('onDidFinishRenderingFrameFully', this);
+        // console.log('onDidFinishRenderingFrameFully', this);
     }
 
     async onRegionDidChange() {
-        await console.log('onRegionDidChange this', this._map);
         const zoom = await this._map.getZoom();
-        await console.log('zoom', zoom);
-
     }
 
     async onRegionWillChange() {
-        await console.log('onRegionWillChange', this._map);
     }
 }
 
@@ -576,15 +485,11 @@ class Map extends Component<Props> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // justifyContent: 'center',
-    // alignItems: 'center',
-    // backgroundColor: '#F5FCFF',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    // backgroundColor: '#F5FCFF',
   },
   welcome: {
     fontSize: 20,
@@ -628,7 +533,4 @@ const mapStateToProps = state => {
     })
 }
 
-// console.log({mapStateToProps, communesUpdate, communesCompletion})
-
-// export default connect(mapStateToProps, { communesUpdate, communesCompletion })(Map);
 export default connect(mapStateToProps, { fetchData, communesUpdate, communesCompletion })(Map);
