@@ -62,6 +62,7 @@ class CreateUser extends Component {
 
             // this.props.onCompleted((data) => console.log(data))
             signIn(signin.data.signinUser.token);
+            this.props.client.resetStore();
 
         } catch (e) {
             console.log(e)

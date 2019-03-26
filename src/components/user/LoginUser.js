@@ -29,6 +29,7 @@ class LoginUser extends Component {
             });
 
             signIn(signin.data.signinUser.token);
+            this.props.client.resetStore();
 
         } catch (e) {
             console.log(e)

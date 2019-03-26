@@ -7,14 +7,37 @@ import { createStackNavigator, createAppContainer } from 'react-navigation';
 import { compose, graphql } from 'react-apollo'
 import gql from 'graphql-tag'
 import { communesUpdate, communesCompletion, fetchData } from './src/actions';
-import { AsyncStorage } from 'react-native';
+import { AsyncStorage, Button } from 'react-native';
+import { withApollo } from 'react-apollo';
 
 import Login from './src/components/user/Login';
+import { signOut } from './src/components/utils/loginUtils'
 
 class App extends React.Component {
-    static navigationOptions = {
-        title: 'Fogify',
+    static navigationOptions = ({ navigation }) => {
+        console.log(navigation.getParam('client'))
+        return {
+            headerTitle: 'Fogify',
+            headerRight: (
+                <Button
+                onPress={() => {
+                    signOut();  
+                    navigation.getParam('client').resetStore();    
+                }}
+                title="Déconnexion"
+                color="#841584"
+                />
+            )}
       };
+
+      /* Lifecycle methods
+      --------------------------------------------------------- */
+    componentDidMount() {
+        console.log(this.props)
+        this.props.navigation.setParams({
+            client: this.props.client
+        })
+    }
 
     render() {
       return <Tab/>
@@ -23,7 +46,7 @@ class App extends React.Component {
 
 const AppStackNavigator = createStackNavigator({
     Home: {
-        screen: App,
+        screen: withApollo(App),
     }
 }); 
 
