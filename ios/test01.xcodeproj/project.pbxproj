@@ -77,6 +77,15 @@
 		FD9533C2CA7B4A809FF35A4B /* rubicon-icon-font.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F203D642D70242CABBB600AC /* rubicon-icon-font.ttf */; };
 		B05316A6CC274398A0E8BC61 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2732A92CED28490DB6497DFF /* SimpleLineIcons.ttf */; };
 		C47876E6E5BF44419E451EA2 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A4CB3496098D43EC8844A729 /* Zocial.ttf */; };
+		5D380B47D208468A9F2155D1 /* Mukta-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0059C189BFEA40FDB924754A /* Mukta-Bold.ttf */; };
+		2830303CFA014516907B1172 /* Mukta-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D0A3A57E979142C39D0B0339 /* Mukta-ExtraBold.ttf */; };
+		C758EAFC01334CE1A782D809 /* Mukta-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 60D261880AA54977B9FFC58C /* Mukta-ExtraLight.ttf */; };
+		C8BF4741A2AB4758A8AE2835 /* Mukta-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BD21DA36F0914BE99187FCF9 /* Mukta-Light.ttf */; };
+		8256969DA4E440838DC6360C /* Mukta-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 72D98CCAACD24BC998B73B01 /* Mukta-Medium.ttf */; };
+		772CF389DEF04B3A8A48FD52 /* Mukta-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FAE90A77341549DBA7BB1F75 /* Mukta-Regular.ttf */; };
+		B790B92A2206478E93F90C2F /* Mukta-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5CCE8FE03E044536966527B5 /* Mukta-SemiBold.ttf */; };
+		24CE2D39A80E46DDA68F8683 /* libRNSVG.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DBB1002BD44D48EA8260C671 /* libRNSVG.a */; };
+		47B9FD83C2F24E438608709A /* libRNSVG-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E02497AFDD840B6B02B332D /* libRNSVG-tvOS.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -426,6 +435,16 @@
 		F203D642D70242CABBB600AC /* rubicon-icon-font.ttf */ = {isa = PBXFileReference; name = "rubicon-icon-font.ttf"; path = "../node_modules/native-base/Fonts/rubicon-icon-font.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		2732A92CED28490DB6497DFF /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; name = "SimpleLineIcons.ttf"; path = "../node_modules/native-base/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		A4CB3496098D43EC8844A729 /* Zocial.ttf */ = {isa = PBXFileReference; name = "Zocial.ttf"; path = "../node_modules/native-base/Fonts/Zocial.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		0059C189BFEA40FDB924754A /* Mukta-Bold.ttf */ = {isa = PBXFileReference; name = "Mukta-Bold.ttf"; path = "../src/fonts/Mukta-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		D0A3A57E979142C39D0B0339 /* Mukta-ExtraBold.ttf */ = {isa = PBXFileReference; name = "Mukta-ExtraBold.ttf"; path = "../src/fonts/Mukta-ExtraBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		60D261880AA54977B9FFC58C /* Mukta-ExtraLight.ttf */ = {isa = PBXFileReference; name = "Mukta-ExtraLight.ttf"; path = "../src/fonts/Mukta-ExtraLight.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		BD21DA36F0914BE99187FCF9 /* Mukta-Light.ttf */ = {isa = PBXFileReference; name = "Mukta-Light.ttf"; path = "../src/fonts/Mukta-Light.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		72D98CCAACD24BC998B73B01 /* Mukta-Medium.ttf */ = {isa = PBXFileReference; name = "Mukta-Medium.ttf"; path = "../src/fonts/Mukta-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		FAE90A77341549DBA7BB1F75 /* Mukta-Regular.ttf */ = {isa = PBXFileReference; name = "Mukta-Regular.ttf"; path = "../src/fonts/Mukta-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		5CCE8FE03E044536966527B5 /* Mukta-SemiBold.ttf */ = {isa = PBXFileReference; name = "Mukta-SemiBold.ttf"; path = "../src/fonts/Mukta-SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		FF7D846C5A4441BBB4E187D7 /* RNSVG.xcodeproj */ = {isa = PBXFileReference; name = "RNSVG.xcodeproj"; path = "../node_modules/react-native-svg/ios/RNSVG.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		DBB1002BD44D48EA8260C671 /* libRNSVG.a */ = {isa = PBXFileReference; name = "libRNSVG.a"; path = "libRNSVG.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		6E02497AFDD840B6B02B332D /* libRNSVG-tvOS.a */ = {isa = PBXFileReference; name = "libRNSVG-tvOS.a"; path = "libRNSVG-tvOS.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -458,6 +477,7 @@
 				B086E82CFA3A4A8498FEEC9C /* libRNGestureHandler.a in Frameworks */,
 				085FF3724CDC4F69A8E280DC /* libRCTMGL.a in Frameworks */,
 				E630672A87CE4EBB979B4C01 /* libRNVectorIcons.a in Frameworks */,
+				24CE2D39A80E46DDA68F8683 /* libRNSVG.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -475,6 +495,7 @@
 				2D02E4C71E0B4AEC006451C7 /* libRCTText-tvOS.a in Frameworks */,
 				2D02E4C81E0B4AEC006451C7 /* libRCTWebSocket-tvOS.a in Frameworks */,
 				34DCBCAF010545C9B395E2F9 /* libRNVectorIcons-tvOS.a in Frameworks */,
+				47B9FD83C2F24E438608709A /* libRNSVG-tvOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -652,6 +673,7 @@
 				6140D86167594A6F82B37E90 /* RNGestureHandler.xcodeproj */,
 				D89880C67AD1465CAB980552 /* RCTMGL.xcodeproj */,
 				1A89ED814378499AA6B9BC04 /* RNVectorIcons.xcodeproj */,
+				FF7D846C5A4441BBB4E187D7 /* RNSVG.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -736,6 +758,13 @@
 				F203D642D70242CABBB600AC /* rubicon-icon-font.ttf */,
 				2732A92CED28490DB6497DFF /* SimpleLineIcons.ttf */,
 				A4CB3496098D43EC8844A729 /* Zocial.ttf */,
+				0059C189BFEA40FDB924754A /* Mukta-Bold.ttf */,
+				D0A3A57E979142C39D0B0339 /* Mukta-ExtraBold.ttf */,
+				60D261880AA54977B9FFC58C /* Mukta-ExtraLight.ttf */,
+				BD21DA36F0914BE99187FCF9 /* Mukta-Light.ttf */,
+				72D98CCAACD24BC998B73B01 /* Mukta-Medium.ttf */,
+				FAE90A77341549DBA7BB1F75 /* Mukta-Regular.ttf */,
+				5CCE8FE03E044536966527B5 /* Mukta-SemiBold.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1220,6 +1249,13 @@
 				FD9533C2CA7B4A809FF35A4B /* rubicon-icon-font.ttf in Resources */,
 				B05316A6CC274398A0E8BC61 /* SimpleLineIcons.ttf in Resources */,
 				C47876E6E5BF44419E451EA2 /* Zocial.ttf in Resources */,
+				5D380B47D208468A9F2155D1 /* Mukta-Bold.ttf in Resources */,
+				2830303CFA014516907B1172 /* Mukta-ExtraBold.ttf in Resources */,
+				C758EAFC01334CE1A782D809 /* Mukta-ExtraLight.ttf in Resources */,
+				C8BF4741A2AB4758A8AE2835 /* Mukta-Light.ttf in Resources */,
+				8256969DA4E440838DC6360C /* Mukta-Medium.ttf in Resources */,
+				772CF389DEF04B3A8A48FD52 /* Mukta-Regular.ttf in Resources */,
+				B790B92A2206478E93F90C2F /* Mukta-SemiBold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1359,6 +1395,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1366,6 +1404,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-gesture-handler\ios/**",
 					"$(SRCROOT)\..\node_modules\@mapbox\react-native-mapbox-gl\ios\RCTMGL",
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
+					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
 				);
 			};
 			name = Debug;
@@ -1392,6 +1431,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1399,6 +1440,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-gesture-handler\ios/**",
 					"$(SRCROOT)\..\node_modules\@mapbox\react-native-mapbox-gl\ios\RCTMGL",
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
+					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
 				);
 			};
 			name = Release;
@@ -1425,6 +1467,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-gesture-handler\ios/**",
 					"$(SRCROOT)\..\node_modules\@mapbox\react-native-mapbox-gl\ios\RCTMGL",
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
+					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
 				);
 			};
 			name = Debug;
@@ -1450,6 +1493,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-gesture-handler\ios/**",
 					"$(SRCROOT)\..\node_modules\@mapbox\react-native-mapbox-gl\ios\RCTMGL",
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
+					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
 				);
 			};
 			name = Release;
@@ -1484,6 +1528,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1491,6 +1537,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-gesture-handler\ios/**",
 					"$(SRCROOT)\..\node_modules\@mapbox\react-native-mapbox-gl\ios\RCTMGL",
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
+					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
 				);
 			};
 			name = Debug;
@@ -1525,6 +1572,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1532,6 +1581,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-gesture-handler\ios/**",
 					"$(SRCROOT)\..\node_modules\@mapbox\react-native-mapbox-gl\ios\RCTMGL",
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
+					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
 				);
 			};
 			name = Release;
@@ -1565,6 +1615,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1572,6 +1624,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-gesture-handler\ios/**",
 					"$(SRCROOT)\..\node_modules\@mapbox\react-native-mapbox-gl\ios\RCTMGL",
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
+					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
 				);
 			};
 			name = Debug;
@@ -1605,6 +1658,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1612,6 +1667,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-gesture-handler\ios/**",
 					"$(SRCROOT)\..\node_modules\@mapbox\react-native-mapbox-gl\ios\RCTMGL",
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
+					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
 				);
 			};
 			name = Release;

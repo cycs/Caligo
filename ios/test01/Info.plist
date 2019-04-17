@@ -73,6 +73,13 @@
 		<string>Roboto_medium.ttf</string>
 		<string>Roboto.ttf</string>
 		<string>rubicon-icon-font.ttf</string>
+		<string>Mukta-Bold.ttf</string>
+		<string>Mukta-ExtraBold.ttf</string>
+		<string>Mukta-ExtraLight.ttf</string>
+		<string>Mukta-Light.ttf</string>
+		<string>Mukta-Medium.ttf</string>
+		<string>Mukta-Regular.ttf</string>
+		<string>Mukta-SemiBold.ttf</string>
 	</array>
 </dict>
 </plist>

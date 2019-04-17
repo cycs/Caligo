@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
-import { Text, View } from 'react-native'
+import { Text, View, StyleSheet } from 'react-native'
 import UserForm from './UserForm'
 import { compose, graphql} from 'react-apollo'
 import gql from 'graphql-tag'
 import { signIn } from '../utils/loginUtils'
 import { request } from 'graphql-request'
+import colors from '../utils/colors'
 
 
 import communesJSON from '../../../communes-minify.json';
@@ -19,9 +20,10 @@ class CreateUser extends Component {
     render() { 
     return (
         <View>
-        <Text>Register</Text>
+        {/* <Text style={styles.text}>Register</Text> */}
         <UserForm 
-            type="Register" 
+            type="S'enregistrer" 
+            action="signup"
             onSubmit={this.createUser}/>
         </View>
     )
@@ -97,8 +99,13 @@ const signinUser = gql`
     }
 `;
 
-
-
+const styles = StyleSheet.create({
+    text: {
+      fontFamily: 'Mukta-Regular',
+      color: colors.selectiveYellow
+    },
+  
+  })
 
 export default compose(
     graphql(createUser, { name: "createUser" }),

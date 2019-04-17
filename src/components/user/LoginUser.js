@@ -12,9 +12,9 @@ class LoginUser extends Component {
     render() { 
     return (
         <View>
-        <Text>Login</Text>
+        {/* <Text>Login</Text> */}
         <UserForm 
-            type="Login" 
+            type="Se connecter" 
             onSubmit={this.loginUser}/>
         </View>
     )
