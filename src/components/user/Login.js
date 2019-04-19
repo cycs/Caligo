@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
         backgroundColor: colors.oldLace,
     },
     changeFormQuestion: {
-        width: '80%',
+        width: '70%',
         marginLeft: 'auto',
         marginRight: 'auto',
         paddingTop: 6,

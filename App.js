@@ -9,6 +9,7 @@ import gql from 'graphql-tag'
 import { communesUpdate, communesCompletion, fetchData } from './src/actions';
 import { AsyncStorage, Button } from 'react-native';
 import { withApollo } from 'react-apollo';
+import Detail from './src/components/Detail'
 
 import Login from './src/components/user/Login';
 import { signOut } from './src/components/utils/loginUtils'
@@ -17,7 +18,8 @@ class App extends React.Component {
     static navigationOptions = ({ navigation }) => {
         console.log(navigation.getParam('client'))
         return {
-            headerTitle: 'Fogify',
+            // headerTitle: 'Fogify',
+            header: null,      
             headerRight: (
                 <Button
                 onPress={() => {
@@ -48,6 +50,7 @@ const AppStackNavigator = createStackNavigator({
     Home: {
         screen: withApollo(App),
     }
+
 }); 
 
 const Container = createAppContainer(AppStackNavigator)

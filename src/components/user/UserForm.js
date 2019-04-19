@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     form: {
         marginRight: 'auto',
         marginLeft: 'auto',
-        width: '80%'
+        width: '70%'
     },
     label: {
         fontFamily: 'Mukta-regular',
