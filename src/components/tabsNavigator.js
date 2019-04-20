@@ -77,6 +77,23 @@ source={require('../img/icon-stats.png')}
 style={styles.icon}
 /> 
 
+const profileActiveState = <View style={{
+    borderColor: colors.goldenTainoi, 
+    justifyContent:'center', 
+    alignItems:'center', 
+    width:'100%', 
+    height:'100%', 
+    borderTopWidth: 3,
+}}><Image
+source={require('../img/icon-profile-active.png')}
+style={styles.icon}
+/></View>;
+
+const profileIdleState = <Image
+source={require('../img/icon-profile.png')}
+style={styles.icon}
+/> 
+
 const Tab = createBottomTabNavigator({
     Home: {
         screen: Map,
@@ -107,7 +124,7 @@ const Tab = createBottomTabNavigator({
         navigationOptions: () => (
             {
             tabBarIcon: ({focused}) => (
-                focused ? mapActiveState : mapIdleState
+                focused ? profileActiveState : profileIdleState
             )
         }
         )

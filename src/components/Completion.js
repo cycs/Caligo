@@ -95,7 +95,7 @@ class Completion extends React.Component {
                 const area = `${Math.round(item.area / 1000000)} km²`
 
               return(
-                <TouchableOpacity onPress={() => navigate('Detail', {id: item.id})} style={completionStyles.flatview} id={item.id}>
+                <TouchableOpacity onPress={() => navigate('Detail', { id: item.id, name: item.name })} style={completionStyles.flatview} id={item.id}>
                   <View style={completionStyles.infos}>
                     <Text style={completionStyles.name}>{item.name}</Text>
                     <Text style={completionStyles.area}>{area}</Text>
