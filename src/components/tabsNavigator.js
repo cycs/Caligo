@@ -5,6 +5,8 @@ import colors from './utils/colors'
 
 import Map from './Map';
 import Completion from './Completion';
+import Success from './Success';
+import Profile from './Profile';
 
 const styles = {
     tab: {
@@ -112,7 +114,7 @@ const Tab = createBottomTabNavigator({
         })
     },
     Success: {
-        screen: Completion,
+        screen: Success,
         navigationOptions: () => ({
             tabBarIcon: ({focused}) => (
                 focused ? successActiveState : successIdleState
@@ -120,7 +122,7 @@ const Tab = createBottomTabNavigator({
         })
     },
     Profile: {
-        screen: Completion,
+        screen: Profile,
         navigationOptions: () => (
             {
             tabBarIcon: ({focused}) => (

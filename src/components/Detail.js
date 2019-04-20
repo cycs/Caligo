@@ -136,27 +136,30 @@ export default class Detail extends Component {
                         <Text style={styles.maintitle}>{this.props.navigation.state.params.name}</Text>
                     </View>
                 </View>
-                <View>
-                    <Text>Infos</Text>
-                    <View>
-                        <Text>110k</Text>
-                        <Text>habs</Text>
+                <View style={styles.mainContent}>
+                    <View style={styles.mainData}>
+                        <Text style={styles.subtitle}>infos</Text>
+                        <View>
+                            <Text style={styles.dataText}>110k</Text>
+                            <Text style={styles.extensionText}>habs</Text>
+                        </View>
+                        <View>
+                            <Text style={styles.dataText}>Namur</Text>
+                            <Text style={styles.extensionText}>province</Text>
+                        </View>
+                        
                     </View>
-                    <View>
-                        <Text>Namur</Text>
-                        <Text>province</Text>
-                    </View>
-                </View>
-                <View>
-                    <Text>Exploré</Text>
-                    <View>
-                        <Text>0,004</Text>
-                        <Text>km²</Text>
-                    </View>
-                    <View>
-                        <Text>0,05</Text>
-                        <Text>%</Text>
-                    </View>
+                    <View style={styles.mainData}>
+                        <Text style={styles.subtitle}>exploré</Text>
+                        <View>
+                            <Text style={styles.dataText}>0,004</Text>
+                            <Text style={styles.extensionText}>km²</Text>
+                        </View>
+                        <View>
+                            <Text style={styles.dataText}>0,05</Text>
+                            <Text style={styles.extensionText}>%</Text>
+                        </View>
+                        </View>
                 </View>
             </View>
         )
@@ -213,17 +216,38 @@ const styles = StyleSheet.create({
       flex: 1,
       position: 'relative'
     },
-    arrowContainer: {
-        paddingLeft: 25
+    mainContent: {
+        width: '80%',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+
     },
-    percentContainer: {
-        // backgroundColor: 'red',
-        
-        alignItems: 'center',
-        alignContent: 'center',
+    mainData: {
+        width: '40%',
+        alignSelf: 'flex-start',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        // backgroundColor: 'green'
     },
-    title: {
+    subtitle: {
+        fontFamily: 'Mukta-Bold',
         fontSize: 30,
-        textAlign: 'center'
-    }
+        color: colors.bronzetone,
+        width: '100%',
+        flex: 0
+    },
+    dataText: {
+        fontFamily: 'Mukta-Medium',
+        fontSize: 18,
+        color: colors.bronzetone,
+        marginRight: 10
+
+    },
+    extensionText: {
+        fontFamily: 'Mukta-Light',
+        fontSize: 12,
+        color: colors.bronzetone20
+    }, 
   });

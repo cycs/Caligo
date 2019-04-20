@@ -8,6 +8,7 @@ const colors = {
     goldenTainoi: '#FFCB51',
     selectiveYellow: '#FFB300',
     bronzetone: '#472C0E',
+    bronzetone20: 'rgba(62, 37, 0, 0.2)',
     
     tide: '#BEB8B0',
 }
