@@ -41,8 +41,8 @@ class Completion extends React.Component {
 
     this.listholder = this.props.list
 
-    console.log(store.getState().communes.communes)
-    console.log(this.props.navigation)
+    // console.log(store.getState().communes.communes)
+    // console.log(this.props.navigation)
 
     store.subscribe(() => {
         this.setState({listSource: this.getList()})
@@ -54,20 +54,20 @@ class Completion extends React.Component {
   /* Lifecycle Methods
   --------------------------------------------------------- */
   componentDidMount() {
-      console.log('COMPONENT DID MOUNT COMPLETION')
+    //   console.log('COMPONENT DID MOUNT COMPLETION')
   }
 
   componentDidUpdate(prevProps, prevState) {
-    console.log("componentDidUpdate COMPLETION")
-    console.log('prevProps', prevProps);
+    // console.log("componentDidUpdate COMPLETION")
+    // console.log('prevProps', prevProps);
     // console.log('props', this.state.list);
 
     // this.listholder = this.props.list; // Keeps the list updated
   }
 
   render() {
-      console.log(Map)
-      console.log('THIS PROPS COMPLETION', this.list)
+    //   console.log(Map)
+    //   console.log('THIS PROPS COMPLETION', this.list)
       const {height, width} = Dimensions.get('window');
       const ratio = width / 3.333;
       const { navigate } = this.props.navigation;
@@ -120,7 +120,7 @@ class Completion extends React.Component {
   /* Methods
   --------------------------------------------------------- */
   getList() {
-      console.log('TIS PROPS GET LIST',this.props)
+    //   console.log('TIS PROPS GET LIST',this.props)
     const list = store.getState().communes.communes.features.map((commune, i) => {
       return this.getArea(commune, i);
     });
@@ -155,7 +155,7 @@ class Completion extends React.Component {
   const percentage = explored / newArea * 100;
   const name = feature.properties.NAMN;
 
-  console.log(percentage);
+//   console.log(percentage);
 
   return {
       id: feature.id,
@@ -168,7 +168,7 @@ class Completion extends React.Component {
 }
 
   sortList(list) {
-      console.log(list)
+    //   console.log(list)
     const newList = list.sort((a, b) => {
         if (a.name < b.name) return -1;
         if ( a.name > b.name) return 1;
@@ -228,13 +228,13 @@ class Completion extends React.Component {
   }
 
   filterList(text) {
-      console.log(text)
+    //   console.log(text)
     // const copy = state.source;
-    console.log(this.state)
+    // console.log(this.state)
 
     const copy = this.state.listSource;
     const newState = copy.filter(item => {
-        console.log(text)
+        // console.log(text)
         return item.name.indexOf(text) > -1;
     });
 
@@ -245,7 +245,7 @@ class Completion extends React.Component {
 
   searchFilterFunction = text => {
     this.setState({searchInput: text})
-    console.log(text)
+    // console.log(text)
     this.filterList(text)
 
     // const newData = this.arrayholder.filter(item => {      

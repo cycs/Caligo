@@ -1,5 +1,5 @@
 {
-  "name": "test01",
+  "name": "Caligo",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -27,7 +27,7 @@
     "react-native-svg": "^9.4.0",
     "react-native-svg-transformer": "^0.12.1",
     "react-native-svg-uri": "^1.2.3",
-    "react-native-vector-icons": "^6.4.1",
+    "react-native-vector-icons": "^6.4.2",
     "react-navigation": "^3.3.2",
     "react-redux": "^6.0.1",
     "redux": "^4.0.1",
