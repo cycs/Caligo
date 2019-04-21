@@ -8,14 +8,27 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, Button, Image} from 'react-native';
+import {Platform, StyleSheet, Text, View, Button, Image, PermissionsAndroid} from 'react-native';
 import Mapbox from '@mapbox/react-native-mapbox-gl';
 // import {name as appName} from './app.json';
 // import communesJSON from './communes-belges.json';
 import communesJSON from '../../Communes-belgique.json';
-import * as turf from '@turf/turf';
+
+
+// import * as turf from '@turf/turf';
+import circle from '@turf/circle';
+import mask from '@turf/mask';
+import intersect from '@turf/intersect';
+import union from '@turf/union';
+import pointOnFeature from '@turf/point-on-feature';
+import buffer from '@turf/buffer';
+import area from '@turf/area';
+import lineToPolygon from '@turf/line-to-polygon';
+import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
+import { point, polygon, lineString, multiPolygon } from '@turf/helpers';
+
+
 import update from 'immutability-helper';
-import { point } from '@turf/helpers';
 import PositionButton from './PositionButton';
 import CreateCommunes from '../graphql/createCommunes';
 import Completion from './Completion';
@@ -28,6 +41,7 @@ import pattern from '../img/pattern-marble.png'
 import { communesUpdate, communesCompletion, fetchData } from '../actions';
 
 import Queries from './queries';
+
 
 console.log('ACTIONS', { communesUpdate, communesCompletion })
 
@@ -100,6 +114,7 @@ class Map extends Component {
                 ]
             }
         };
+        
 
 
 
@@ -134,38 +149,56 @@ class Map extends Component {
     }
 
 
+    async requestLocationPermission(){
+        try {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+            {
+              'title': 'Caligo',
+              'message': 'Caligo access to your location '
+            }
+          )
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            console.log("You can use the location")
+            
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                this.setState({ 
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    timestamp:  position.timestamp
+                })
+                },
+                (error) => { console.log(error) },
+                { enableHighAccuracy: true, timeout: 20000, maximumAge: 2000 }
+            )
 
+            this.watchPosition = navigator.geolocation.watchPosition(
+                (lastPosition) => {
+                    // console.log(lastPosition);
+                this.setState({lastPosition});
+                this.drawCircle(lastPosition);
+                },
+                (error) => { console.log(error) },
+                {enableHighAccuracy: true, timeout: 20000, maximumAge: 2000, distanceFilter: 10}
+            );
+          } else {
+            console.log("location permission denied")
+          }
+        } catch (err) {
+          console.warn(err)
+        }
+      }
 
     /* Lifecycle methods
     --------------------------------------------------------- */
 
-    componentDidMount() {
+    async componentDidMount() {
         console.log("DID MOUNT");  
         console.log(this);  
 
         this.props.fetchData()
-
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-              this.setState({ 
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                timestamp:  position.timestamp
-              })
-            },
-            (error) => { console.log(error) },
-            { enableHighAccuracy: true, timeout: 20000, maximumAge: 2000 }
-          )
-
-          this.watchPosition = navigator.geolocation.watchPosition(
-            (lastPosition) => {
-                // console.log(lastPosition);
-              this.setState({lastPosition});
-              this.drawCircle(lastPosition);
-            },
-            (error) => { console.log(error) },
-            {enableHighAccuracy: true, timeout: 20000, maximumAge: 2000, distanceFilter: 10}
-          );
+        await this.requestLocationPermission()
         
     }
 
@@ -191,7 +224,8 @@ class Map extends Component {
         const communesShape = this.props.communes.features.map((commune, i) => {
             return (
             <Mapbox.ShapeSource key={commune.properties.SHN} id={commune.properties.SHN} shape={commune.geometry} tolerance={this.shapeSourceParams.tolerance}>
-                <Mapbox.FillLayer  id={commune.properties.SHN} style={{ fillPattern: require('../img/pattern512.png') }} />
+                <Mapbox.FillLayer  id={commune.properties.SHN} style={{ fillColor: colors.oldLace }} />
+                {/* <Mapbox.FillLayer  id={commune.properties.SHN} style={{ fillPattern: require('../img/pattern512.png') }} /> */}
             </Mapbox.ShapeSource>)
         })
 
@@ -260,7 +294,7 @@ class Map extends Component {
         const radius = 0.05;
         const options = {steps: 64, units: 'kilometers'};
 
-        let circle = turf.circle(center, radius, options);
+        let newCircle = circle(center, radius, options);
 
         const communesShape = await this.props.communes.features.map((commune, i) => {
             const isInPolygon = this.isPositionInPolygon(position, commune)
@@ -272,55 +306,55 @@ class Map extends Component {
                 if (commune.geometry.coordinates.length === 2) { // if 2 arrays, then the first is a mask
                     coords = commune.geometry.coordinates[1];
 
-                    const actualMask = turf.polygon([commune.geometry.coordinates[0]]);
-                    const intersection = turf.intersect(actualMask, circle);
+                    const actualMask = polygon([commune.geometry.coordinates[0]]);
+                    const intersection = intersect(actualMask, newCircle);
 
-                    circle = intersection ? this.unionPolygons(actualMask, circle) : this.unionMultiPolygons(actualMask, circle);
+                    newCircle = intersection ? this.unionPolygons(actualMask, newCircle) : this.unionMultiPolygons(actualMask, circle);
                 }
-                const poly1 = turf.polygon([coords]);
-                const mask = turf.mask(poly1, circle);
+                const poly1 = polygon([coords]);
+                const newMask = mask(poly1, newCircle);
     
-                mask.properties.SHN = commune.properties.SHN
-                mask.properties.NAMN = commune.properties.NAMN
-                mask.id = commune.id;
+                newMask.properties.SHN = commune.properties.SHN
+                newMask.properties.NAMN = commune.properties.NAMN
+                newMask.id = commune.id;
                 
-                console.log(commune, mask, this.state)
+                console.log(commune, newMask, this.state)
                 const id = commune.id;
 
-                this.props.communesUpdate(mask, i, id);
-                this.props.communesCompletion(mask, i);
+                this.props.communesUpdate(newMask, i, id);
+                this.props.communesCompletion(newMask, i);
             }
         })
     }
 
     unionPolygons(poly1, poly2) {
-        const union = turf.union(poly1, poly2);
+        const newUnion = union(poly1, poly2);
 
-        return union;
+        return newUnion;
     }
 
     unionMultiPolygons(poly1, poly2) {
         this.bufferDistance =  0.000001 //in kilometers
           
-        const pointOnPolygon1 = turf.pointOnFeature(poly1);
-        const pointOnPolygon2 = turf.pointOnFeature(poly2);
+        const pointOnPolygon1 = pointOnFeature(poly1);
+        const pointOnPolygon2 = pointOnFeature(poly2);
 
         const line = [pointOnPolygon1.geometry.coordinates, pointOnPolygon2.geometry.coordinates];
-        const linestring = turf.lineString(line);
-        const buffered = turf.buffer(linestring, this.bufferDistance); //transform a line into a rectangle
+        const newLinestring = lineString(line);
+        const buffered = buffer(newLinestring, this.bufferDistance); //transform a line into a rectangle
 
-        var union = turf.union(buffered, poly1, poly2);
+        var newUnion = union(buffered, poly1, poly2);
 
-        return union;
+        return newUnion;
     }
 
     isPositionInPolygon(position, commune) {
         if (commune.properties.SHN == "BE421009" || commune.properties.SHN == "BE213002" || commune.properties.SHN == "BE233016") return false;
 
-        let polygon = commune.geometry.coordinates.length == 2 ? turf.polygon([commune.geometry.coordinates[1]]) : commune;
+        let newPolygon = commune.geometry.coordinates.length == 2 ? polygon([commune.geometry.coordinates[1]]) : commune;
         
-        const point = turf.point(position);
-        const isInMunicipality = turf.booleanPointInPolygon(point, polygon);
+        const newPoint = point(position);
+        const isInMunicipality = booleanPointInPolygon(newPoint, newPolygon);
 
         return isInMunicipality;
     }
@@ -350,7 +384,7 @@ class Map extends Component {
 
     showPosition() {
         console.log('POSITION', this.state.lastPosition.coords);
-        let shapePoint = turf.point([this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude]);
+        let shapePoint = point([this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude]);
         return (
           <Mapbox.ShapeSource
             id='exampleShapeSource'
@@ -382,23 +416,23 @@ class Map extends Component {
             return {area: 0, explored: 0, percentage: 0, name: feature.properties.NAMN}
         }
 
-        let polygon = feature.geometry.coordinates[0];
+        let newPolygon = feature.geometry.coordinates[0];
         let explored = 0;
         
         if (feature.geometry.coordinates.length > 1) {
-            polygon = feature.geometry.coordinates[1]
+            newPolygon = feature.geometry.coordinates[1]
             
-            const  polygonExplored = turf.polygon([feature.geometry.coordinates[0]]);
-            explored = turf.area(polygonExplored);
+            const  polygonExplored = polygon([feature.geometry.coordinates[0]]);
+            explored = area(polygonExplored);
         }
 
-        polygon = turf.polygon([polygon]);
+        newPolygon = polygon([newPolygon]);
 
-        const area = turf.area(polygon);
-        const percentage = explored / area * 100;
+        const newArea = area(newPolygon);
+        const percentage = explored / newArea * 100;
         
         return {
-            area,
+            area: newArea,
             explored,
             percentage
         }
@@ -409,23 +443,23 @@ class Map extends Component {
 
         const communesShape = await this.state.communes.features.map((commune, i) => {
             if(commune.properties.NAMN == 'Crisnée'){
-                const poly1 = turf.polygon([commune.geometry.coordinates[0]]);
+                const poly1 = polygon([commune.geometry.coordinates[0]]);
 
-                const line = turf.lineString(this.state.travel);
-                const polygon = turf.lineToPolygon(line);
+                const line = lineString(this.state.travel);
+                const newPolygon = lineToPolygon(line);
 
-                const multiPolygon = turf.multiPolygon(this.state.travel);
+                const NewMultiPolygon = multiPolygon(this.state.travel);
 
-                const mask = turf.mask(poly1, multiPolygon);
+                const newMask = mask(poly1, NewMultiPolygon);
     
                 mask.properties.SHN = commune.properties.SHN
     
-                commune = mask;
+                commune = newMask;
     
                 this.setState({
                     communes: update(this.state.communes, {
                         features: {
-                            [i]: {$set: mask}
+                            [i]: {$set: newMask}
                         }
                     })
                   });
@@ -436,20 +470,20 @@ class Map extends Component {
     async onPressMaskMap() {
         const communesShape = await communesJSON.features.map((commune, i) => {
             if(commune.properties.NAMN == 'Crisnée'){
-                var poly1 = turf.polygon([commune.geometry.coordinates[0]]);
-                var poly2 = turf.polygon([this.state.shape.geometry.coordinates]);
+                var poly1 = polygon([commune.geometry.coordinates[0]]);
+                var poly2 = polygon([this.state.shape.geometry.coordinates]);
     
-                var mask = turf.mask(poly1, poly2);
+                var newMask = mask(poly1, poly2);
     
-                mask.properties.SHN = commune.properties.SHN
+                newMask.properties.SHN = commune.properties.SHN
     
-                commune = mask;
+                commune = newMask;
                 console.log(this.state)
     
                 this.setState({
                     communes: update(this.state.communes, {
                         features: {
-                            [i]: {$set: mask}
+                            [i]: {$set: newMask}
                         }
                     })
                   });

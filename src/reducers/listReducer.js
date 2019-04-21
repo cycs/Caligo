@@ -1,15 +1,18 @@
 // import communesJSON from '../../Communes-belgique.json';
 import communesJSON from '../../communes-minify.json';
 import update from 'immutability-helper';
-import * as turf from '@turf/turf';
+// import * as turf from '@turf/turf';
+
+import { polygon } from '@turf/helpers';
+import area from '@turf/area';
+
+console.log(area)
 
 function getList(communes) {
     // console.log('TIS PROPS GET LIST',this.props)
   const list = communes.map((commune, i) => {
     return getArea(commune, i);
   });
-
-  console.log
 
   return list;
 }
@@ -22,25 +25,25 @@ function getArea(feature, i) {
         )  {
         return {area: 0, explored: 0, percentage: 0, name: feature.properties.NAMN}
     }
-  let polygon = feature.geometry.coordinates[0];
+  let newPolygon = feature.geometry.coordinates[0];
   let explored = 0;
   
   if (feature.geometry.coordinates.length > 1) {
-      polygon = feature.geometry.coordinates[1]
+    newPolygon = feature.geometry.coordinates[1]
       
-      const  polygonExplored = turf.polygon([feature.geometry.coordinates[0]]);
-      explored = turf.area(polygonExplored);
+      const  polygonExplored = polygon([feature.geometry.coordinates[0]]);
+      explored = area(polygonExplored);
   }
 
-  polygon = turf.polygon([polygon]);
+  newPolygon = polygon([newPolygon]);
 
-  const area = turf.area(polygon);
-  const percentage = explored / area * 100;
+  const newArea = area(newPolygon);
+  const percentage = explored / newArea * 100;
   const name = feature.properties.NAMN;
 
   return {
       id: i,
-      area,
+      area: newArea,
       explored,
       percentage,
       name
@@ -109,7 +112,7 @@ export default function listReducer(state = initialState, { type, mask, i, text 
             return {
                 source: state.source,
                 filter: newState
-            };;
+            };
 
     }
     
