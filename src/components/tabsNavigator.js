@@ -40,10 +40,17 @@ source={require('../img/icon-map-active.png')}
 style={styles.icon}
 /></View>;
 
-const mapIdleState = <Image
+const mapIdleState = <View style={{
+    borderColor: colors.white, 
+    justifyContent:'center', 
+    alignItems:'center', 
+    width:'100%', 
+    height:'100%', 
+    borderTopWidth: 3,
+}}><Image
 source={require('../img/icon-map.png')}
 style={styles.icon}
-/> 
+/></View> 
 
 const successActiveState = <View style={{
     borderColor: colors.goldenTainoi, 
@@ -57,10 +64,17 @@ source={require('../img/icon-success-active.png')}
 style={styles.icon}
 /></View>;
 
-const successIdleState = <Image
+const successIdleState = <View style={{
+    borderColor: colors.white, 
+    justifyContent:'center', 
+    alignItems:'center', 
+    width:'100%', 
+    height:'100%', 
+    borderTopWidth: 3,
+}}><Image
 source={require('../img/icon-success.png')}
 style={styles.icon}
-/> 
+/></View> 
 
 const statsActiveState = <View style={{
     borderColor: colors.goldenTainoi, 
@@ -74,10 +88,17 @@ source={require('../img/icon-stats-active.png')}
 style={styles.icon}
 /></View>;
 
-const statsIdleState = <Image
+const statsIdleState = <View style={{
+    borderColor: colors.white, 
+    justifyContent:'center', 
+    alignItems:'center', 
+    width:'100%', 
+    height:'100%', 
+    borderTopWidth: 3,
+}}><Image
 source={require('../img/icon-stats.png')}
 style={styles.icon}
-/> 
+/></View> 
 
 const profileActiveState = <View style={{
     borderColor: colors.goldenTainoi, 
@@ -91,10 +112,17 @@ source={require('../img/icon-profile-active.png')}
 style={styles.icon}
 /></View>;
 
-const profileIdleState = <Image
+const profileIdleState = <View style={{
+    borderColor: colors.white, 
+    justifyContent:'center', 
+    alignItems:'center', 
+    width:'100%', 
+    height:'100%', 
+    borderTopWidth: 3,
+}}><Image
 source={require('../img/icon-profile.png')}
 style={styles.icon}
-/> 
+/></View> 
 
 const Tab = createBottomTabNavigator({
     Home: {

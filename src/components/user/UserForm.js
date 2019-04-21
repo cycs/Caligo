@@ -84,6 +84,7 @@ const styles = StyleSheet.create({
     label: {
         fontFamily: 'Mukta-regular',
         color: colors.tide,
+        fontSize: 16,
     },
     item: {
         borderBottomWidth: 2,
@@ -101,7 +102,7 @@ const styles = StyleSheet.create({
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 50
+        marginTop: 30
     },
     buttonText: {
         color: colors.white,

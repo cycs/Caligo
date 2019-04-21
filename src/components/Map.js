@@ -22,6 +22,8 @@ import Completion from './Completion';
 import TabsNavigator from './tabsNavigator';
 import markerMyPosition from '../img/marker.png';
 import { connect } from 'react-redux';
+import colors from '../components/utils/colors'
+import pattern from '../img/pattern-marble.png'
 
 import { communesUpdate, communesCompletion, fetchData } from '../actions';
 
@@ -189,14 +191,14 @@ class Map extends Component {
         const communesShape = this.props.communes.features.map((commune, i) => {
             return (
             <Mapbox.ShapeSource key={commune.properties.SHN} id={commune.properties.SHN} shape={commune.geometry} tolerance={this.shapeSourceParams.tolerance}>
-                <Mapbox.FillLayer id={commune.properties.SHN} style={mbStyles.communes} />
+                <Mapbox.FillLayer  id={commune.properties.SHN} style={{ fillPattern: require('../img/pattern512.png') }} />
             </Mapbox.ShapeSource>)
         })
 
         return (
             <View style={styles.container}>
-                <Text>lat: {this.state.latitude}, lon: {this.state.longitude}</Text>
-                <Text>Last Position: [lat : {this.state.lastPosition ? this.state.lastPosition.coords.latitude : ''}, lon: { this.state.lastPosition ? this.state.lastPosition.coords.longitude : '' }]</Text>
+                {/* <Text>lat: {this.state.latitude}, lon: {this.state.longitude}</Text> */}
+                {/* <Text>Last Position: [lat : {this.state.lastPosition ? this.state.lastPosition.coords.latitude : ''}, lon: { this.state.lastPosition ? this.state.lastPosition.coords.longitude : '' }]</Text> */}
                 {/* <CreateCommunes/> */}
                 {/* <Button
                     onPress={this.onPressMaskMap.bind(this)}
@@ -505,7 +507,7 @@ const styles = StyleSheet.create({
 const mbStyles = Mapbox.StyleSheet.create({
     communes: {
         // fillAntialias: false,
-        fillColor: 'rgba(251, 253, 255, 1)',
+        // fillColor: 'rgba(251, 253, 255, 1)',
         fillOutlineColor: '#000',
       },
       icon: {
@@ -513,10 +515,10 @@ const mbStyles = Mapbox.StyleSheet.create({
         iconSize: 1,
       },
       singlePoint: {
-        circleColor: 'hsl(200, 90%, 50%)',
+        circleColor: colors.goldenTainoi,
         circleOpacity: 0.84,
         circleStrokeWidth: 2,
-        circleStrokeColor: 'white',
+        circleStrokeColor: colors.bronzetone,
         circleRadius: 10,
         circlePitchAlignment: 'map',
       },

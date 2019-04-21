@@ -8,6 +8,8 @@ import LoginUser from './LoginUser';
 
 import Cloud from '../../img/nuage-login.svg';
 import Logo from '../../img/logo.svg';
+import LogoTitle from '../../img/logo-title.svg';
+import Belgium from '../../img/belgium.svg';
 
 class Login extends Component {
     state = {
@@ -33,6 +35,11 @@ class Login extends Component {
             source={require('../../img/logo.png')}
             style={styles.logo}
             /> */}
+        </View>
+        <View style={styles.titleContainer}>
+            <Belgium style={styles.belgium} width={120} height={120} stroke={colors.bronzetone5} fill='none'/>
+            <LogoTitle style={styles.logotitle} width={180} height={50} fill={colors.bronzetone}/>
+            <Text style={styles.subtitle}>Marche. Explore. Dévoile.</Text>
         </View>
         <View style={styles.loginContainer}>
         {
@@ -81,9 +88,38 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         width: '100%'
     },
+    titleContainer: {
+        position: 'absolute',
+        width: '70%',
+        // height: 150,
+        marginLeft: '15%',
+        marginRight: 'auto',
+        justifyContent: 'center',
+        alignItems: 'flex-end',
+        top: 210,
+        left: 0,
+        // backgroundColor: 'green'
+    },
+    logotitle: {
+        // position: 'absolute'
+        // backgroundColor: 'pink'
+
+    },
+    subtitle: {
+        // backgroundColor: 'red'
+        fontSize: 12,
+        fontFamily: 'Mukta-Light',
+        color: colors.bronzetone60
+    },
     logo: {
         // width: 78,
         // height: 80,
+    },
+    belgium: {
+        position: 'absolute',
+        right: 100,
+        top: -10,
+        zIndex: 2
     },
     loginContainer: {
         backgroundColor: colors.oldLace,
@@ -102,13 +138,13 @@ const styles = StyleSheet.create({
     },
     cloud: {
         position: 'absolute',
-        top: -20,
+        top: -40,
         left: -30,
         transform: [{ rotate: '-15deg'}]
     },
     cloudSecond: {
         position: 'absolute',
-        top: -60,
+        top: -80,
         left: 80,
         transform: [{ rotate: '-30deg'}]
     },

@@ -32,6 +32,12 @@ class CreateUser extends Component {
   /* Methods
   --------------------------------------------------------- */
     createUser = async ({ email, password }) => {
+
+        // Ligne à supprimer - Empeche de s'enregistrer
+        return false;
+
+
+        
         try {
             const user = await this.props.createUser({ 
                 variables: { email, password }
