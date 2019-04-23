@@ -37,7 +37,7 @@ class CreateUser extends Component {
         return false;
 
 
-        
+
         try {
             const user = await this.props.createUser({ 
                 variables: { email, password }

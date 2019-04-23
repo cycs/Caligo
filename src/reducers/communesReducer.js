@@ -30,7 +30,7 @@ const initialState = {
 }
 
 export default function communesReducer(state = initialState, { type, mask, i, data, loading, error }) {
-    console.log('COMMUNESUPDATE TOP', state);
+    // console.log('COMMUNESUPDATE TOP', state);
     
     switch(type) {
         case "REQUEST_DATA":
@@ -46,7 +46,7 @@ export default function communesReducer(state = initialState, { type, mask, i, d
                 communes: data
             }
         case "REQUEST_DATA_ERROR":
-            console.log('error', state)
+            // console.log('error', state)
             return {
                 ...state,
                 communes: [],
@@ -65,7 +65,7 @@ export default function communesReducer(state = initialState, { type, mask, i, d
                 communes: myData
             };
         case 'COMMUNESUPDATE':
-            console.log('COMMUNESUPDATE', {state, mask, i});
+            // console.log('COMMUNESUPDATE', {state, mask, i});
             return update(state, {
                 communes: {
                     features: {

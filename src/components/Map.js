@@ -32,7 +32,6 @@ import update from 'immutability-helper';
 import PositionButton from './PositionButton';
 import CreateCommunes from '../graphql/createCommunes';
 import Completion from './Completion';
-import TabsNavigator from './tabsNavigator';
 import markerMyPosition from '../img/marker.png';
 import { connect } from 'react-redux';
 import colors from '../components/utils/colors'
@@ -43,7 +42,7 @@ import { communesUpdate, communesCompletion, fetchData } from '../actions';
 import Queries from './queries';
 
 
-console.log('ACTIONS', { communesUpdate, communesCompletion })
+// console.log('ACTIONS', { communesUpdate, communesCompletion })
 
 
 Mapbox.setAccessToken('pk.eyJ1IjoiY3ljcyIsImEiOiJjanN1anA2OWYwMGZtNGJrN3Y0ejJqOXpiIn0.q5gDP42dUSpQrUY0FyJiuw')
@@ -51,7 +50,7 @@ Mapbox.setAccessToken('pk.eyJ1IjoiY3ljcyIsImEiOiJjanN1anA2OWYwMGZtNGJrN3Y0ejJqOX
 class Map extends Component {
     constructor(props) {
         super(props);
-        console.log(props)
+        // console.log(props)
 
 
 
@@ -159,7 +158,7 @@ class Map extends Component {
             }
           )
           if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            console.log("You can use the location")
+            // console.log("You can use the location")
             
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -183,7 +182,7 @@ class Map extends Component {
                 {enableHighAccuracy: true, timeout: 20000, maximumAge: 2000, distanceFilter: 10}
             );
           } else {
-            console.log("location permission denied")
+            // console.log("location permission denied")
           }
         } catch (err) {
           console.warn(err)
@@ -194,8 +193,8 @@ class Map extends Component {
     --------------------------------------------------------- */
 
     async componentDidMount() {
-        console.log("DID MOUNT");  
-        console.log(this);  
+        // console.log("DID MOUNT");  
+        // console.log(this);  
 
         this.props.fetchData()
         await this.requestLocationPermission()
@@ -203,11 +202,11 @@ class Map extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        console.log("componentDidUpdate")
+        // console.log("componentDidUpdate")
     }
 
     componentWillUnmount() {
-        console.log("will unmount")
+        // console.log("will unmount")
     }
 
     
@@ -219,7 +218,7 @@ class Map extends Component {
                 </View>
             )
         }
-        console.log('HAS LOADED');
+        // console.log('HAS LOADED');
 
         const communesShape = this.props.communes.features.map((commune, i) => {
             return (
@@ -284,7 +283,7 @@ class Map extends Component {
     --------------------------------------------------------- */
 
     async drawCircle(state) {
-        console.log('draw circle state', state);
+        // console.log('draw circle state', state);
 
         if (this.props.loading) return false; // prevents drawing before list of municipalities has been loaded
 
@@ -318,7 +317,7 @@ class Map extends Component {
                 newMask.properties.NAMN = commune.properties.NAMN
                 newMask.id = commune.id;
                 
-                console.log(commune, newMask, this.state)
+                // console.log(commune, newMask, this.state)
                 const id = commune.id;
 
                 this.props.communesUpdate(newMask, i, id);
@@ -383,7 +382,7 @@ class Map extends Component {
     }
 
     showPosition() {
-        console.log('POSITION', this.state.lastPosition.coords);
+        // console.log('POSITION', this.state.lastPosition.coords);
         let shapePoint = point([this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude]);
         return (
           <Mapbox.ShapeSource
@@ -399,7 +398,7 @@ class Map extends Component {
     }
 
     getList() {
-        console.log("GET LIST", this.props)
+        // console.log("GET LIST", this.props)
         const list = this.props.communes.features.map((commune) => {
         return this.getArea(commune);
       });
@@ -439,7 +438,7 @@ class Map extends Component {
     }
 
     async onPressPathMask() {
-        console.log('PATH TO MASK');
+        // console.log('PATH TO MASK');
 
         const communesShape = await this.state.communes.features.map((commune, i) => {
             if(commune.properties.NAMN == 'Crisnée'){
@@ -478,7 +477,7 @@ class Map extends Component {
                 newMask.properties.SHN = commune.properties.SHN
     
                 commune = newMask;
-                console.log(this.state)
+                // console.log(this.state)
     
                 this.setState({
                     communes: update(this.state.communes, {
@@ -560,7 +559,7 @@ const mbStyles = Mapbox.StyleSheet.create({
 
 
 const mapStateToProps = state => {
-    console.log('MAPSTTE MAP', state)
+    // console.log('MAPSTTE MAP', state)
     return ({
         communes: state.communes.communes,
         list: state.list,

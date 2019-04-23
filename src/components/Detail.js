@@ -56,10 +56,10 @@ export default class Detail extends Component {
     componentDidMount() {
         // this.id = props.navigation.state.params.id;
         
-        console.log(this.props.navigation.state.params.id)
+        // console.log(this.props.navigation.state.params.id)
         const query = `
         {
-            Municipality(id: "${this.props.navigation.state.params.id}") {
+            Municipality(id: "${this.props.navigation.state.params.item.id}") {
                 data
             }
         }`
@@ -72,16 +72,16 @@ export default class Detail extends Component {
                         return [Math.trunc(coord[0] * 10000), Math.trunc(coord[1] * 100)]
                     })
 
-                    console.log(njson)
+                    // console.log(njson)
                     json.geometry.coordinates[0] = njson
-                    console.log(json)
+                    // console.log(json)
 
                     const svg = geojson2svg()
                     .styles({ fill: 'black'})
                     .data(json)
                     .render();
                     
-                    console.log(svg)
+                    // console.log(svg)
 
                     this.setState({
                         path: 'M1.47634 22.87983l.59389.25483L3.682 21.3523l2.54824-1.61176 1.78165-1.10282.93294-1.27412 1.10282-.59388.84942.50894.67882-.84942 2.79953-.59388.84941.08494v.93294l.93294-.84941.16988 1.69882h.50894l.33906 1.95153 1.78165.08494.59388-.4247V21.181l.67882.25482.25483 1.95153 1.78164-.50894 1.61176.76376s2.71459.08494 2.88447.08494 2.37553-.33906 2.37553-.33906l2.54824-1.27412 4.49623 4.24212.93294.67882 2.12354.93294h1.27412l-.25482-1.44188 1.78164-.50894V24.40665l1.61177-1.95153 1.78164-.33905V21.3523l-.6045-1.01788.33906-.33906L44.1502 18.8076l.08494-.76377L48.90125 16.941l.42471-1.10282 2.62964-.93294v-.67882l-.4247-2.29059L53.99136 10.409 51.70078 6.59161l1.95153-.59388s1.52682-.59388 1.61176-.42471a3.916 3.916 0 0 0 .84941.59388L56.70736 4.725l1.27413.33906 1.44188-.93294L60.01725 5.149l-.93294.84942 2.29058 1.10282.93295.84941 2.71458-2.96941V8.45749l.67882-.59388 1.77882-.25554.93294.085-.93294-4.2407L70.0283 1.67067 71.04618 3.6222l1.01789-1.95153L74.1876 3.79421l1.35765.25482V5.90925L74.35748 8.11489l1.18777 1.01788L78.42971 8.369l1.95153 1.52682-.84941.50894-3.39341 1.78165-.16988 1.35764 1.61177 1.52682 2.03576.50894 3.22352 1.01788.67883.76377 1.27412-2.03576 1.18776-3.47835V9.90008l1.61176-3.73247.93293-.16988s.33906.67882.42471.93294a4.8892 4.8892 0 0 0 .42472.76376l.93293 1.10282 1.10282-.67882V9.3069l1.44188 1.52683 1.61176-.93295 1.78165 2.37553L95.56663 14.058 93.361 15.33208l3.73246 3.13858 3.30847.42471V20.762l.93293.76376-1.61176 1.52682 1.35765 2.71459-.16989 1.95153-3.39341 5.175-.93293-.4247L94.461 35.94736a11.601 11.601 0 0 0-2.12353.93294c0 .16917 1.52682 3.05435 1.52682 3.30846s2.20564.42471 2.12353.84942-.84941 1.18776-.84941 1.52682a17.60812 17.60812 0 0 1-.50894 2.03576s-2.29059 1.44188-2.20564 1.69883a17.54821 17.54821 0 0 0 1.27412 1.69883l.25483 1.52682 1.01788-.16988s.93294.84941 1.01789.93294-.84942 3.13858-.84942 3.13858l-2.62964.67882 1.61176 2.88447L94.8 57.245l.33906 1.10283h1.35765l1.86658 2.62964-.50893.59388-.33907 1.27412-1.44258.67882 2.29058 4.75106L96.4118 69.54946 94.376 70.4824H93.18827l-1.78164 2.88447-5.26-4.92023-.42471 1.78164.25483 1.61177 1.01788.76376-2.46047 1.78165.08494 1.86659H86.061l-1.10282 2.12353-1.35764.76377-.085 1.18776-.67882.25483v1.01788s-4.07223.08494-4.15718.33906-.93294 4.92023-.93294 4.92023l-.59388-.33906-.84941.33906-.76376-.59388-2.12354.08494a12.206 12.206 0 0 1-2.37553-.59388c0-.16917.08494-1.52682.08494-1.52682l1.18777-1.69883L70.7864 81.5977l-7.8047-.16988L62.13229 85.585l-2.46047-.25483-.59388.59388-2.71458-.25482-2.37553-.76377H51.69866l-.76377-2.20564-2.20564-.42471-1.86659-3.05435-.84941-4.49623-3.81741-2.03576-2.28917-9.09015-1.01788 1.86871L37.4462 66.90921l-1.61176-.08494.16988 1.27412-1.18776 1.10282H32.44173L31.50879 70.728l-1.35764.25483L28.877 70.389l-.59388.59388H24.80621l.50894-2.62964-1.10282-5.17931S25.40009 56.048 25.82409 56.048a6.37564 6.37564 0 0 1 1.27412.25482l.76377-.76376.08494-2.03577-.76377-.50894L28.625 50.19486H26.9262l-7.97458-12.812-3.98729.59388L11.23187 41.0311l-6.61694-.84941.08494-2.62964-.4247-1.78165L1.05235 32.46618V28.985l.84941-.76377.16988-1.69883-.76518-1.52186-.25482-1.44188Z'
@@ -94,14 +94,14 @@ export default class Detail extends Component {
 
                         RNFS.writeFile(path, 'hello', 'utf8')
                         .then((success) => {
-                            console.log(RNFS, 'FILE WRITTEN!');
+                            // console.log(RNFS, 'FILE WRITTEN!');
 
                             // RNFS.scanFile(`${dir_path}/${this.props.navigation.state.params.name}.svg`).then((res) => {
                             //     console.log(`${this.props.navigation.state.params.name} SUCCESSFULLY SCANED`)
                             // })
 
                             RNFS.readDir(dir_path).then((files) => {
-                                console.log(files)
+                                // console.log(files)
                             })   
                         })
                         .catch((err) => {
@@ -117,6 +117,7 @@ export default class Detail extends Component {
         const {height, width} = Dimensions.get('window');
         const ratio = width / 3.333;
         const { navigate } = this.props.navigation;
+        const { item } = this.props.navigation.state.params;
 
         return (
             <View>
@@ -152,11 +153,11 @@ export default class Detail extends Component {
                     <View style={styles.mainData}>
                         <Text style={styles.subtitle}>exploré</Text>
                         <View>
-                            <Text style={styles.dataText}>0,004</Text>
+                            <Text style={styles.dataText}>{((item.area*item.percentage/100) / 1000000).toFixed(3)}</Text>
                             <Text style={styles.extensionText}>km²</Text>
                         </View>
                         <View>
-                            <Text style={styles.dataText}>0,05</Text>
+                            <Text style={styles.dataText}>{item.percentage.toFixed(2)}</Text>
                             <Text style={styles.extensionText}>%</Text>
                         </View>
                         </View>

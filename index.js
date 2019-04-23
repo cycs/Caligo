@@ -21,7 +21,7 @@ import { getToken } from './src/components/utils/loginUtils';
 
 const authLink = setContext(async (req, { headers }) => {
     const token = await getToken();
-    console.log(token);
+    // console.log(token);
     return {
         ... headers,
         headers: {
@@ -40,7 +40,7 @@ const client = new ApolloClient({
     link,
     cache: new InMemoryCache()
 }); 
-console.log(client);
+// console.log(client);
 
 const AppContainer = () => (
     <ApolloProvider client={client}>

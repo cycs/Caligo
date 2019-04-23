@@ -14,8 +14,8 @@ class Profile extends Component {
 }
 
   render() {
-      console.log(this.props.navigation)
-      console.log(this.props)
+    //   console.log(this.props.navigation)
+    //   console.log(this.props)
     return (
       <View>
         <Text> Profil </Text>

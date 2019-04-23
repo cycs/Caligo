@@ -6,8 +6,6 @@ import update from 'immutability-helper';
 import { polygon } from '@turf/helpers';
 import area from '@turf/area';
 
-console.log(area)
-
 function getList(communes) {
     // console.log('TIS PROPS GET LIST',this.props)
   const list = communes.map((commune, i) => {
@@ -67,7 +65,7 @@ const initialState = {
 export default function listReducer(state = initialState, { type, mask, i, text }) {
     switch(type) {
         case 'COMPLETIONUPDATE':
-            console.log('COMPLETIONUPDATE', {state, i, mask});
+            // console.log('COMPLETIONUPDATE', {state, i, mask});
 
             const indexSource = state.source.reduce((acc, curr, ind) => {
                 if (curr.id == i) {
@@ -101,11 +99,11 @@ export default function listReducer(state = initialState, { type, mask, i, text 
                 }
             });
         case 'COMPLETIONFILTER':
-            console.log(state)
+            // console.log(state)
 
             const copy = state.source;
             const newState = copy.filter(item => {
-                console.log(text)
+                // console.log(text)
                 return item.name.indexOf(text) > -1;
             });
 

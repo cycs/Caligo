@@ -4,12 +4,12 @@ import { graphql } from 'react-apollo';
 import {Platform, StyleSheet, Text, View, Button, Image} from 'react-native';
 import communesJSON from '../../communes-minify.json';
 
-console.log(communesJSON)
+// console.log(communesJSON)
 
 
 class CreateCommunes extends Component {
     newDB = () => {
-        console.log('MUTAAAAAAAAAAAAAAAAATIONOOOOOOOOOOOOOONN', this.props);
+        // console.log('MUTAAAAAAAAAAAAAAAAATIONOOOOOOOOOOOOOONN', this.props);
 
         communesJSON.features.map((com, i) => {
             const commune = JSON.stringify(com);

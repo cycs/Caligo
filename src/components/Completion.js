@@ -10,7 +10,7 @@ import { filterList } from '../actions';
 import colors from './utils/colors'
 import { createStackNavigator, createAppContainer } from 'react-navigation';
 import Detail from './Detail'
-
+import CompletionItem from './completion-item'
 
 import store from '../components/Store';
 
@@ -35,39 +35,50 @@ class Completion extends React.Component {
     
     this.state = {
         searchInput: '',
-        listSource: this.getList(),
-        listfiltered: this.getList()
+        listSource: [],
+        listfiltered: []
     }
 
     this.listholder = this.props.list
 
-    console.log(store.getState().communes.communes)
-    console.log(this.props.navigation)
+    // console.log(store.getState().communes.communes)
+    // console.log(this.props.navigation)
 
-    store.subscribe(() => {
-        this.setState({listSource: this.getList()})
-        this.filterList(this.state.searchInput)
-    })
+ 
 
   }
 
   /* Lifecycle Methods
   --------------------------------------------------------- */
   componentDidMount() {
-      console.log('COMPONENT DID MOUNT COMPLETION')
+    store.subscribe(() => {
+        this.setState({listSource: this.getList()})
+        this.filterList(this.state.searchInput)
+    })
+
+      this.setState({
+          listSource: this.getList(),
+          listfiltered: this.getList(),
+        })
+    //   console.log('COMPONENT DID MOUNT COMPLETION')
   }
 
+//   shouldComponentUpdate(nextProps, nextState) {
+//     console.log(nextProps, nextState)
+//     console.log(this.props, this.state)
+//   }
+
   componentDidUpdate(prevProps, prevState) {
-    console.log("componentDidUpdate COMPLETION")
-    console.log('prevProps', prevProps);
+    // console.log("componentDidUpdate COMPLETION")
+    // console.log('prevProps', prevProps);
     // console.log('props', this.state.list);
 
     // this.listholder = this.props.list; // Keeps the list updated
   }
 
   render() {
-      console.log(Map)
-      console.log('THIS PROPS COMPLETION', this.list)
+    //   console.log(Map)
+    //   console.log('THIS PROPS COMPLETION', this.list)
       const {height, width} = Dimensions.get('window');
       const ratio = width / 3.333;
       const { navigate } = this.props.navigation;
@@ -90,25 +101,27 @@ class Completion extends React.Component {
             </View>
           <FlatList
             // ItemSeparatorComponent={this.renderSeparator}
+            // extraData={this.state}
             data={this.sortList(this.state.listfiltered)}
             renderItem={({item}) => {
-                const percent = `${item.percentage.toFixed(2)}%`;
+                // const percent = `${item.percentage.toFixed(2)}%`;
                 // const percent = `${item.percentage}%`;
-                const newArea = `${Math.round(item.area / 1000000)} km²`
+                // const newArea = `${Math.round(item.area / 1000000)} km²`
 
               return(
-                <TouchableOpacity onPress={() => navigate('Detail', { id: item.id, name: item.name })} style={completionStyles.flatview} id={item.id}>
-                  <View style={completionStyles.infos}>
-                    <Text style={completionStyles.name}>{item.name}</Text>
-                    <Text style={completionStyles.area}>{newArea}</Text>
-                  </View>
-                  <View style={completionStyles.percentContainer}>
-                    <Text style={completionStyles.percentage}>{percent}</Text>
-                  </View>
-                  <View style={completionStyles.arrowContainer}>
-                    <Arrow height={15} width={15} fill={colors.bronzetone}/>
-                  </View>
-                </TouchableOpacity >
+                <CompletionItem item={item} goto={() => navigate('Detail', { item })}/>
+                // <TouchableOpacity onPress={() => navigate('Detail', { id: item.id, name: item.name })} style={completionStyles.flatview} id={item.id}>
+                //   <View style={completionStyles.infos}>
+                //     <Text style={completionStyles.name}>{item.name}</Text>
+                //     <Text style={completionStyles.area}>{newArea}</Text>
+                //   </View>
+                //   <View style={completionStyles.percentContainer}>
+                //     <Text style={completionStyles.percentage}>{percent}</Text>
+                //   </View>
+                //   <View style={completionStyles.arrowContainer}>
+                //     <Arrow height={15} width={15} fill={colors.bronzetone}/>
+                //   </View>
+                // </TouchableOpacity >
                 )
             }}
             keyExtractor={(item) => item.id}
@@ -120,7 +133,7 @@ class Completion extends React.Component {
   /* Methods
   --------------------------------------------------------- */
   getList() {
-      console.log('TIS PROPS GET LIST',this.props)
+    //   console.log('TIS PROPS GET LIST',this.props)
     const list = store.getState().communes.communes.features.map((commune, i) => {
       return this.getArea(commune, i);
     });
@@ -155,7 +168,7 @@ class Completion extends React.Component {
   const percentage = explored / newArea * 100;
   const name = feature.properties.NAMN;
 
-  console.log(percentage);
+//   console.log(percentage);
 
   return {
       id: feature.id,
@@ -168,7 +181,9 @@ class Completion extends React.Component {
 }
 
   sortList(list) {
-      console.log(list)
+    //   console.log(list)
+    if(list.length == 0) return false;
+
     const newList = list.sort((a, b) => {
         if (a.name < b.name) return -1;
         if ( a.name > b.name) return 1;
@@ -228,13 +243,13 @@ class Completion extends React.Component {
   }
 
   filterList(text) {
-      console.log(text)
+    //   console.log(text)
     // const copy = state.source;
-    console.log(this.state)
+    // console.log(this.state)
 
     const copy = this.state.listSource;
     const newState = copy.filter(item => {
-        console.log(text)
+        // console.log(text)
         return item.name.indexOf(text) > -1;
     });
 
@@ -245,7 +260,7 @@ class Completion extends React.Component {
 
   searchFilterFunction = text => {
     this.setState({searchInput: text})
-    console.log(text)
+    // console.log(text)
     this.filterList(text)
 
     // const newData = this.arrayholder.filter(item => {      

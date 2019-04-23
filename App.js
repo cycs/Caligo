@@ -14,9 +14,14 @@ import Detail from './src/components/Detail'
 import Login from './src/components/user/Login';
 import { signOut } from './src/components/utils/loginUtils'
 
+// if (process.env.NODE_ENV !== 'production') {
+//     const {whyDidYouUpdate} = require('why-did-you-update')
+//     whyDidYouUpdate(React)
+//   }
+
 class App extends React.Component {
     static navigationOptions = ({ navigation }) => {
-        console.log(navigation.getParam('client'))
+        // console.log(navigation.getParam('client'))
         return {
             // headerTitle: 'Fogify',
             header: null,      
@@ -35,7 +40,7 @@ class App extends React.Component {
       /* Lifecycle methods
       --------------------------------------------------------- */
     componentDidMount() {
-        console.log(this.props)
+        // console.log(this.props)
         this.props.navigation.setParams({
             client: this.props.client
         })
@@ -78,7 +83,7 @@ const gqlWrapper = graphql(userQuery, {
 });
 
 const mapStateToProps = state => {
-    console.log('MAPSTATE APP', state)
+    // console.log('MAPSTATE APP', state)
     return ({
         communes: [],
         list: state.list,
