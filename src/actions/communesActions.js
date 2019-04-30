@@ -68,7 +68,7 @@ const updateQL = (state, stateId) => {
 
     request('https://api.graph.cool/simple/v1/cjtfy59zu7gaj0138jz9a1xon', mutation, variables)
     .then(data => {
-        // console.log(data);
+        console.log(data);
     })
     .catch(error => {
         console.error(error);

@@ -26,16 +26,19 @@ import area from '@turf/area';
 import lineToPolygon from '@turf/line-to-polygon';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import { point, polygon, lineString, multiPolygon } from '@turf/helpers';
-
+import Supercluster from 'supercluster';
 
 import update from 'immutability-helper';
 import PositionButton from './PositionButton';
 import CreateCommunes from '../graphql/createCommunes';
 import Completion from './Completion';
+import Point from './interest/points'
+
 import markerMyPosition from '../img/marker.png';
 import { connect } from 'react-redux';
 import colors from '../components/utils/colors'
 import pattern from '../img/pattern-marble.png'
+
 
 import { communesUpdate, communesCompletion, fetchData } from '../actions';
 
@@ -57,6 +60,7 @@ class Map extends Component {
         /* State
         --------------------------------------------------------- */
         this.state = {
+          markers: [],
           disabled: false,
           active: true,
           communes: communesJSON,
@@ -64,6 +68,13 @@ class Map extends Component {
               namur: [4.856387665236815, 50.465550770154636],
               crisnee: [5.3954002323, 50.7111308907],
             },
+          region: {
+            latitude: 50.465550770154636,
+            longitude: 4.856387665236815,
+            latitudeDelta: 1,
+            longitudeDelta: 1,
+            zoom: 12
+          },
           shape: {
             geometry: {
               coordinates: [
@@ -144,6 +155,7 @@ class Map extends Component {
 
         this.onRegionDidChange = this.onRegionDidChange.bind(this);
         this.onRegionWillChange = this.onRegionWillChange.bind(this);
+        this.onDidFinishRenderingFrameFully = this.onDidFinishRenderingFrameFully.bind(this);
         this.flyToCurrentPosition = this.flyToCurrentPosition.bind(this);
     }
 
@@ -195,11 +207,15 @@ class Map extends Component {
     async componentDidMount() {
         // console.log("DID MOUNT");  
         // console.log(this);  
-
+        this.generateMarkers()
         this.props.fetchData()
         await this.requestLocationPermission()
         
     }
+
+    componentWillReceiveProps(newProps) {
+        this.generateMarkers(newProps);
+      }
 
     componentDidUpdate(prevProps, prevState) {
         // console.log("componentDidUpdate")
@@ -222,11 +238,21 @@ class Map extends Component {
 
         const communesShape = this.props.communes.features.map((commune, i) => {
             return (
-            <Mapbox.ShapeSource key={commune.properties.SHN} id={commune.properties.SHN} shape={commune.geometry} tolerance={this.shapeSourceParams.tolerance}>
-                <Mapbox.FillLayer  id={commune.properties.SHN} style={{ fillColor: colors.oldLace }} />
-                {/* <Mapbox.FillLayer  id={commune.properties.SHN} style={{ fillPattern: require('../img/pattern512.png') }} /> */}
-            </Mapbox.ShapeSource>)
+                <View key={commune.properties.SHN}>
+                    <Mapbox.ShapeSource key={commune.properties.SHN} id={commune.properties.SHN} shape={commune.geometry} tolerance={this.shapeSourceParams.tolerance}>
+                        <Mapbox.FillLayer id={commune.properties.SHN} style={{ fillColor: colors.oldLace, fillOutlineColor: colors.bronzetone }} />
+                        {/* <Mapbox.FillLayer  id={commune.properties.SHN} style={{ fillPattern: require('../img/pattern512.png') }} /> */}
+                    </Mapbox.ShapeSource>            
+                </View>)
         })
+
+    const newPoint1 = point([4.4578500000000005, 50.758892]);
+    const newPoint2 = point([3.807111, 50.8641955]);
+    const newPoint3 = point([4.4151775, 51.095394]);
+    const newPoint4 = point([3.2041190000000004, 50.985628]);
+    const newPoint5 = point([4.3073815, 50.796278]);
+
+    const listPoints = [];        
 
         return (
             <View style={styles.container}>
@@ -260,6 +286,36 @@ class Map extends Component {
                     onRegionWillChange={this.onRegionWillChange}
                 >
                     {communesShape}
+                    {/* {listPoints} */}
+                    {/* <View>{ PoI }</View> */}
+                    {/* {cluster.markers.map((marker, index) => this.renderMarker(marker, index))} */}
+                    {/* <Point municipalities={this.props.communes.features}/>/> */}
+                    {/* <PointsOfInterest municipalities={this.props.communes.features}/> */}
+                    <Mapbox.ShapeSource
+                        id={`pointOfInterests`}
+                        shape={{
+                            type: 'FeatureCollection',
+                            features: this.state.markers,
+                          }}
+                        cluster={true}
+                        clusterMaxZoomLevel={14}
+                        clusterRadius={50}
+                    >
+                        <Mapbox.SymbolLayer id="pointCount" style={mbStyles.clusterCount}/>
+
+                        <Mapbox.CircleLayer
+                            id='clusteredPoints'
+                            belowLayerID="pointCount"
+                            style={mbStyles.clusterPoI}
+                            filter={['has', 'point_count']}
+                        />
+                        <Mapbox.CircleLayer
+                            id="singlePoI"
+                            filter={['all', ['!has', 'point_count']]}
+                            style={mbStyles.singlePoI}  
+                        />
+                    </Mapbox.ShapeSource>
+
                     {this.showPosition()}
                 </Mapbox.MapView>
                 <PositionButton disabled={this.state.disabled} isRipple onPress={this.flyToCurrentPosition.bind(this)} rippleColor="hsl(217, 100%, 70%)">
@@ -281,6 +337,23 @@ class Map extends Component {
 
     /* Methods
     --------------------------------------------------------- */
+    generateMarkers = (props = this.props) => {
+        if (props.loading) return false;
+
+        const PoI = props.communes.features
+        .filter(mun => {
+            if (mun.properties.SHN == "BE421009" || mun.properties.SHN == "BE213002" || mun.properties.SHN == "BE233016") return false;
+            return true;
+        })
+        .map((mun, index) => {   
+            const newPolygon = polygon([mun.geometry.coordinates[0]])
+            const pointsOnPolygon = pointOnFeature(newPolygon);
+
+            return pointsOnPolygon;
+        })
+
+        this.setState({ markers: PoI });
+    }
 
     async drawCircle(state) {
         // console.log('draw circle state', state);
@@ -290,7 +363,7 @@ class Map extends Component {
         const position = [this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude];
 
         const center = position;
-        const radius = 0.05;
+        const radius = 0.1;
         const options = {steps: 64, units: 'kilometers'};
 
         let newCircle = circle(center, radius, options);
@@ -308,7 +381,7 @@ class Map extends Component {
                     const actualMask = polygon([commune.geometry.coordinates[0]]);
                     const intersection = intersect(actualMask, newCircle);
 
-                    newCircle = intersection ? this.unionPolygons(actualMask, newCircle) : this.unionMultiPolygons(actualMask, circle);
+                    newCircle = intersection ? this.unionPolygons(actualMask, newCircle) : this.unionMultiPolygons(actualMask, newCircle);
                 }
                 const poly1 = polygon([coords]);
                 const newMask = mask(poly1, newCircle);
@@ -502,8 +575,22 @@ class Map extends Component {
         // console.log('onDidFinishRenderingFrameFully', this);
     }
 
-    async onRegionDidChange() {
-        const zoom = await this._map.getZoom();
+    onRegionDidChange(data) {
+        
+        if (!this._map) return false;
+        console.log(this._map);
+        console.log(data);
+        const lon = data.geometry.coordinates[0]
+        const lat = data.geometry.coordinates[1]
+
+        this.setState({ region : {
+                latitude: lat,
+                longitude: lon,
+                latitudeDelta: 1,
+                longitudeDelta: 1,
+                zoom: data.properties.zoomLevel
+            }
+        })
     }
 
     async onRegionWillChange() {
@@ -549,12 +636,60 @@ const mbStyles = Mapbox.StyleSheet.create({
       },
       singlePoint: {
         circleColor: colors.goldenTainoi,
-        circleOpacity: 0.84,
-        circleStrokeWidth: 2,
-        circleStrokeColor: colors.bronzetone,
+        circleOpacity: 1,
+        // circleStrokeWidth: 2,
+        // circleStrokeColor: colors.bronzetone,
         circleRadius: 10,
         circlePitchAlignment: 'map',
       },
+      singlePoI: {
+        visibility: 'visible',
+        circleColor: colors.sanJuan,
+        circleOpacity: 1,
+        // circleStrokeWidth: 1,
+        // circleStrokeColor: colors.white,
+        circleRadius: 5,
+        circlePitchAlignment: 'map',
+      },
+      clusterPoI: {
+        circleColor: Mapbox.StyleSheet.source(
+          [[2, colors.sanJuan]],
+          'point_count',
+          Mapbox.InterpolationMode.Exponential,
+        ),
+        // circleRadius: Mapbox.StyleSheet.source(
+        //   [[2, 21]],
+        //   'point_count',
+        //   Mapbox.InterpolationMode.Exponential,
+        // ),
+        // circleColor: Mapbox.StyleSheet.source([
+        //     [25, 'yellow'],
+        //     [50, 'red'],
+        //     [75, 'blue'],
+        //     [100, 'orange'],
+        //     [300, 'pink'],
+        //     [750, 'white'],
+        //   ], 'point_count', Mapbox.InterpolationMode.Exponential),
+      
+          circleRadius: Mapbox.StyleSheet.source([
+            [0, 10],
+            [50, 15],
+            [150, 20],
+            [200, 25],
+            [300, 30],
+            [500, 40],
+          ], 'point_count', Mapbox.InterpolationMode.Exponential),
+        // circleStrokeWidth: 2,
+        // circleStrokeColor: 'white',
+      },
+      clusterCount: {
+        textField: '{point_count}',
+        textSize: 16,
+        // textFont: ['Mukta-Regular'],
+        textHaloColor: '#fff',
+        // textHaloWidth: 0.3,
+        textColor: '#fff',
+      }
 });
 
 
