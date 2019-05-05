@@ -13,6 +13,7 @@ import Mapbox from '@mapbox/react-native-mapbox-gl';
 // import {name as appName} from './app.json';
 // import communesJSON from './communes-belges.json';
 import communesJSON from '../../Communes-belgique.json';
+import { request } from 'graphql-request'
 
 
 // import * as turf from '@turf/turf';
@@ -23,10 +24,10 @@ import union from '@turf/union';
 import pointOnFeature from '@turf/point-on-feature';
 import buffer from '@turf/buffer';
 import area from '@turf/area';
+import bbox from '@turf/bbox';
 import lineToPolygon from '@turf/line-to-polygon';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import { point, polygon, lineString, multiPolygon } from '@turf/helpers';
-import Supercluster from 'supercluster';
 
 import update from 'immutability-helper';
 import PositionButton from './PositionButton';
@@ -38,7 +39,7 @@ import markerMyPosition from '../img/marker.png';
 import { connect } from 'react-redux';
 import colors from '../components/utils/colors'
 import pattern from '../img/pattern-marble.png'
-
+import Modal from "react-native-modal";
 
 import { communesUpdate, communesCompletion, fetchData } from '../actions';
 
@@ -48,7 +49,7 @@ import Queries from './queries';
 // console.log('ACTIONS', { communesUpdate, communesCompletion })
 
 
-Mapbox.setAccessToken('pk.eyJ1IjoiY3ljcyIsImEiOiJjanN1anA2OWYwMGZtNGJrN3Y0ejJqOXpiIn0.q5gDP42dUSpQrUY0FyJiuw')
+Mapbox.setAccessToken('sk.eyJ1IjoiY3ljcyIsImEiOiJjanY1YnJueXcxMTdvM3lvNzlwMnN4NWpwIn0.VWoC5NPRh6Kz2vCHrrvVjA')
 
 class Map extends Component {
     constructor(props) {
@@ -61,6 +62,10 @@ class Map extends Component {
         --------------------------------------------------------- */
         this.state = {
           markers: [],
+          markerData: null,
+          bonusRevealedData: null,
+          isModalVisible: false,
+          isModalPoIVisible: false,
           disabled: false,
           active: true,
           communes: communesJSON,
@@ -157,6 +162,7 @@ class Map extends Component {
         this.onRegionWillChange = this.onRegionWillChange.bind(this);
         this.onDidFinishRenderingFrameFully = this.onDidFinishRenderingFrameFully.bind(this);
         this.flyToCurrentPosition = this.flyToCurrentPosition.bind(this);
+        this.onPressMarker = this.onPressMarker.bind(this);
     }
 
 
@@ -187,8 +193,8 @@ class Map extends Component {
             this.watchPosition = navigator.geolocation.watchPosition(
                 (lastPosition) => {
                     // console.log(lastPosition);
-                this.setState({lastPosition});
-                this.drawCircle(lastPosition);
+                    this.setState({lastPosition})
+                    this.drawCircle(lastPosition)
                 },
                 (error) => { console.log(error) },
                 {enableHighAccuracy: true, timeout: 20000, maximumAge: 2000, distanceFilter: 10}
@@ -207,14 +213,16 @@ class Map extends Component {
     async componentDidMount() {
         // console.log("DID MOUNT");  
         // console.log(this);  
-        this.generateMarkers()
+        // this.generateMarkers()
         this.props.fetchData()
         await this.requestLocationPermission()
         
     }
 
     componentWillReceiveProps(newProps) {
-        this.generateMarkers(newProps);
+        if(this.state.markers.length == 0) {
+            this.generateMarkers(newProps);
+        }
       }
 
     componentDidUpdate(prevProps, prevState) {
@@ -272,7 +280,7 @@ class Map extends Component {
                 /> */}
                 <Mapbox.MapView 
                     ref={(c)=> this._map = c}
-                    styleURL={Mapbox.StyleURL.Dark} 
+                    styleURL={'mapbox://styles/cycs/cjv5es9ui1tv91ftgut7t84bk'} 
                     attributionEnabled={false}
                     zoomLevel={12} 
                     centerCoordinate={this.state.centerCoordinate.namur} 
@@ -284,6 +292,8 @@ class Map extends Component {
                     onRegionDidChange={this.onRegionDidChange}
                     onDidFinishRenderingFrameFully={this.onDidFinishRenderingFrameFully}
                     onRegionWillChange={this.onRegionWillChange}
+                    onPress={this.onPressMarker}
+
                 >
                     {communesShape}
                     {/* {listPoints} */}
@@ -328,6 +338,27 @@ class Map extends Component {
                         height: 25
                     }}/>
                 </PositionButton>
+                <Modal 
+                    isVisible={this.state.isModalVisible} 
+                    coverScreen={false}
+                    onBackButtonPress={() => this.setState({isModalVisible: false})}
+                    onBackdropPress={() => this.setState({isModalVisible: false})}
+                    >
+                    <View style={{ flex: 1}}>
+                        {/* <Button title="Hide modal" onPress={this.toggleModal} /> */}
+                        {this.renderModal()}
+                    </View>
+                </Modal>
+                <Modal 
+                    isVisible={this.state.isModalPoIVisible} 
+                    coverScreen={false}
+                    onBackButtonPress={() => this.setState({isModalPoIVisible: false})}
+                    onBackdropPress={() => this.setState({isModalPoIVisible: false})}
+                    >
+                    <View style={{ flex: 1}}>
+                        {this.renderBonusRevealedModal()}
+                    </View>
+                </Modal>
             </View>
         );
     }
@@ -338,6 +369,7 @@ class Map extends Component {
     /* Methods
     --------------------------------------------------------- */
     generateMarkers = (props = this.props) => {
+        console.log('generateMarkers')
         if (props.loading) return false;
 
         const PoI = props.communes.features
@@ -347,13 +379,138 @@ class Map extends Component {
         })
         .map((mun, index) => {   
             const newPolygon = polygon([mun.geometry.coordinates[0]])
-            const pointsOnPolygon = pointOnFeature(newPolygon);
+            const newPoint = pointOnFeature(newPolygon);
 
-            return pointsOnPolygon;
+            newPoint.properties.NAMN = mun.properties.NAMN
+            newPoint.properties.SHN = mun.properties.SHN
+            newPoint.properties.ID = mun.id
+            newPoint.properties.bonus = {
+                name: "Rayon d'exploration doublé",
+                duration: '30 jours'
+            }
+
+            // const mutation = `
+            //     mutation createPointOfInterest($data: String!, $id: ID!) {
+            //         createPointOfInterest(data: $data, municipalityId: $id) { id }
+            //     }`
+
+            //     const commune = JSON.stringify(newPoint);
+            //     const variables = {
+            //         id: mun.id,
+            //         data: commune,
+            //     };
+
+            //     request('https://api.graph.cool/simple/v1/cjtfy59zu7gaj0138jz9a1xon', mutation, variables);
+         
+
+            // console.log(newPoint, mun); 
+            return newPoint;
         })
+
+        const newPoint2 = point([4.856387665236815, 50.465550770154636])
+            newPoint2.properties.NAMN = 'Namur'
+            newPoint2.properties.name = 'Bonus 30'
+            newPoint2.properties.SHN = 'BE392094'
+            newPoint2.properties.ID = "cjusk602e0c560119bxya4j1c"
+            newPoint2.properties.bonus = {
+                name: "Rayon d'exploration doublé",
+                duration: '30 jours'
+            }
+
+        PoI.push(newPoint2)
 
         this.setState({ markers: PoI });
     }
+
+    async onPressMarker (e) {
+        const { screenPointX, screenPointY, } = e.properties        
+        const screenCoords = [screenPointX, screenPointY];
+
+        console.log(screenCoords)
+
+        const PoI = await this._map.queryRenderedFeaturesInRect(
+            this.getBoundingBox(screenCoords),
+            null,
+            ['singlePoI'],
+        )
+
+        if (PoI.features.length == 1) {
+            const markerData = PoI.features[0].properties
+
+            this.setState({ markerData })
+            this.toggleModal()
+        }
+    } 
+
+    getBoundingBox(screenCoords) {
+        const maxX = screenCoords[0] + 25
+        const minX = screenCoords[0] - 25
+        const maxY = screenCoords[1] + 25
+        const minY = screenCoords[1] - 25
+
+        return [maxY, maxX, minY, minX]
+    }
+
+    renderModal = () => {
+        if (this.state.markerData !== null) {
+            const data = this.state.markerData
+
+            return (
+                <View style={styles.modal}>
+                    <Text style={styles.modalContent}>{data.NAMN}</Text>
+                    <Text style={styles.modalContent}>{data.bonus.name}</Text>
+                </View>
+            );
+        }
+
+        return (<View><Text>No data</Text></View>)     
+    }
+
+    renderBonusRevealedModal = () => {
+        if (this.state.bonusRevealedData !== null) {
+
+            const data = this.state.bonusRevealedData
+            return (
+                <View style={styles.modal}>
+                    <Text style={styles.modalContent}>Bonus débloqué !</Text>
+                    <Text style={styles.modalContent}>{data.bonus.name}</Text>
+                </View>
+            )
+        }
+
+        return (<View><Text>No data</Text></View>)     
+    }
+
+    toggleModal = () => {
+        this.setState({ isModalVisible: !this.state.isModalVisible });
+    }
+
+    toggleModalPoI = (properties) => {
+        this.setState({ 
+            bonusRevealedData: properties,
+            isModalPoIVisible: !this.state.isModalPoIVisible 
+        });
+    }
+
+    
+    isBonusRevealed(SHN, position, circ) {
+        const markersFiltered = this.state.markers.filter(marker => {
+            if (marker.properties.SHN === SHN) {
+                const isInCircle = booleanPointInPolygon(marker.geometry.coordinates, circ);
+
+                if (isInCircle) {
+                    this.toggleModalPoI(marker.properties)
+                }
+
+                return !isInCircle;
+            }
+
+            return true;
+        })
+
+        this.setState({ markers: markersFiltered })
+    }
+    
 
     async drawCircle(state) {
         // console.log('draw circle state', state);
@@ -367,6 +524,7 @@ class Map extends Component {
         const options = {steps: 64, units: 'kilometers'};
 
         let newCircle = circle(center, radius, options);
+        const circlePoI = newCircle
 
         const communesShape = await this.props.communes.features.map((commune, i) => {
             const isInPolygon = this.isPositionInPolygon(position, commune)
@@ -395,6 +553,9 @@ class Map extends Component {
 
                 this.props.communesUpdate(newMask, i, id);
                 this.props.communesCompletion(newMask, i);
+
+                this.isBonusRevealed(commune.properties.SHN, position, circlePoI)
+
             }
         })
     }
@@ -621,7 +782,19 @@ const styles = StyleSheet.create({
   loading: {
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
+  modal: {
+    backgroundColor: 'white',
+    padding: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 4,
+    borderColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  modalContent: {
+    fontSize: 20,
+    marginBottom: 12,
+  },
 });
 
 const mbStyles = Mapbox.StyleSheet.create({
@@ -656,21 +829,7 @@ const mbStyles = Mapbox.StyleSheet.create({
           [[2, colors.sanJuan]],
           'point_count',
           Mapbox.InterpolationMode.Exponential,
-        ),
-        // circleRadius: Mapbox.StyleSheet.source(
-        //   [[2, 21]],
-        //   'point_count',
-        //   Mapbox.InterpolationMode.Exponential,
-        // ),
-        // circleColor: Mapbox.StyleSheet.source([
-        //     [25, 'yellow'],
-        //     [50, 'red'],
-        //     [75, 'blue'],
-        //     [100, 'orange'],
-        //     [300, 'pink'],
-        //     [750, 'white'],
-        //   ], 'point_count', Mapbox.InterpolationMode.Exponential),
-      
+        ),      
           circleRadius: Mapbox.StyleSheet.source([
             [0, 10],
             [50, 15],
@@ -680,7 +839,7 @@ const mbStyles = Mapbox.StyleSheet.create({
             [500, 40],
           ], 'point_count', Mapbox.InterpolationMode.Exponential),
         // circleStrokeWidth: 2,
-        // circleStrokeColor: 'white',
+        circleStrokeColor: 'white',
       },
       clusterCount: {
         textField: '{point_count}',
