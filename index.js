@@ -9,13 +9,14 @@ import App from './App';
 import {name as appName} from './app.json';
 import React from 'react';
 import { Provider } from 'react-redux';
-import store from './src/components/Store';
+import {store, persistor} from './src/components/Store';
 import { ApolloProvider } from 'react-apollo';
 import ApolloClient from "apollo-client";
 import { HttpLink, createHttpLink  } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import communesJSON from './communes-minify.json';
 import { setContext } from 'apollo-link-context';
+import { PersistGate } from 'redux-persist/integration/react'
 
 import { getToken } from './src/components/utils/loginUtils';
 
@@ -45,7 +46,9 @@ const client = new ApolloClient({
 const AppContainer = () => (
     <ApolloProvider client={client}>
         <Provider store={store}>
-            <AppStackNavigator/>
+            <PersistGate loading={null} persistor={persistor}>
+                <AppStackNavigator/>
+            </PersistGate>
         </Provider>
     </ApolloProvider>
 

@@ -89,6 +89,13 @@ export const communesUpdate = (mask, i, id) => {
     }
 }
 
+export const markersUpdate = (markers) => {
+    return {
+        type: 'MARKERSUPDATE',
+        markers
+    }
+}
+
 export const communesCompletion = (mask, i) => {
     // console.log('COMPLETIONUPDATE', {mask, i})
     return {

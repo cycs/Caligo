@@ -26,10 +26,11 @@ const query = `{
 
 const initialState = {
     communes: [],
+    markers: [],
     loading: true
 }
 
-export default function communesReducer(state = initialState, { type, mask, i, data, loading, error }) {
+export default function communesReducer(state = initialState, { type, mask, i, data, loading, error, markers }) {
     // console.log('COMMUNESUPDATE TOP', state);
     
     switch(type) {
@@ -73,6 +74,11 @@ export default function communesReducer(state = initialState, { type, mask, i, d
                     }
                 }
             });
+        case 'MARKERSUPDATE':
+            return {
+                ...state,
+                markers
+            }
     }
     
     return state;

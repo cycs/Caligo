@@ -3,6 +3,7 @@ import { Text, View, StyleSheet, Dimensions } from 'react-native'
 import { request } from 'graphql-request'
 import colors from './utils/colors'
 import geojson2svg, { Renderer } from 'geojson-to-svg';
+import { store } from '../components/Store';
 
 import CloudHeader from '../img/header-completion.svg';
 import Cloud from '../img/cloud.svg';
@@ -48,13 +49,15 @@ export default class Detail extends Component {
         // console.log(this)
         this.state = {
             municipality : null,
-            path: ''
+            path: '',
+            markers: null
         }
 
     }
 
     componentDidMount() {
         // this.id = props.navigation.state.params.id;
+        this.setState({ markers: store.getState().communes.markers })
         
         // console.log(this.props.navigation.state.params.id)
         const query = `
@@ -118,6 +121,29 @@ export default class Detail extends Component {
         const ratio = width / 3.333;
         const { navigate } = this.props.navigation;
         const { item } = this.props.navigation.state.params;
+        console.log(this.props, this.props.navigation.state.params.name);
+
+        let filteredMarkers = <Text>Aucun point d'intérêt restant</Text>
+        
+        if (this.state.markers) {
+            filteredMarkers = this.state.markers
+                .filter(marker => marker.properties.SHN === this.props.navigation.state.params.item.SHN)
+                .map((marker, i) => {
+                    return (
+                        <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }} key={`marker_${i}`}>
+                            <View>  
+                                <Text style={styles.dataText}>{marker.properties.bonus.name}</Text>
+                                <Text style={styles.extensionText}>effet</Text>
+                            </View>
+                            <View>
+                                <Text style={styles.dataText}>{marker.properties.bonus.duration}</Text>
+                                <Text style={styles.extensionText}>jours</Text>
+                            </View>
+                        </View>
+                    )
+                })
+        }
+        console.log(filteredMarkers)
 
         return (
             <View>
@@ -134,12 +160,12 @@ export default class Detail extends Component {
 
 
                         {/* <SvgUri width="200" height="200" fill={colors.bronzetone} source={require('../img/communes/Namur.svg')} /> */}
-                        <Text style={styles.maintitle}>{this.props.navigation.state.params.name}</Text>
+                        <Text style={styles.maintitle}>{item.name}</Text>
                     </View>
                 </View>
                 <View style={styles.mainContent}>
                     <View style={styles.mainData}>
-                        <Text style={styles.subtitle}>infos</Text>
+                        <Text style={styles.subtitle}>Infos</Text>
                         <View>
                             <Text style={styles.dataText}>110k</Text>
                             <Text style={styles.extensionText}>habs</Text>
@@ -151,7 +177,7 @@ export default class Detail extends Component {
                         
                     </View>
                     <View style={styles.mainData}>
-                        <Text style={styles.subtitle}>exploré</Text>
+                        <Text style={styles.subtitle}>Exploré</Text>
                         <View>
                             <Text style={styles.dataText}>{((item.area*item.percentage/100) / 1000000).toFixed(3)}</Text>
                             <Text style={styles.extensionText}>km²</Text>
@@ -160,7 +186,13 @@ export default class Detail extends Component {
                             <Text style={styles.dataText}>{item.percentage.toFixed(2)}</Text>
                             <Text style={styles.extensionText}>%</Text>
                         </View>
-                        </View>
+                    </View>
+                </View>
+                <View style={styles.PoIContent}>
+                    <Text style={styles.subtitle}>Points d'intérêt</Text>
+                    <View style={styles.PoIData}>  
+                        {filteredMarkers}
+                    </View>
                 </View>
             </View>
         )
@@ -222,7 +254,8 @@ const styles = StyleSheet.create({
         marginLeft: 'auto',
         marginRight: 'auto',
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        marginBottom: 18
 
     },
     mainData: {
@@ -231,6 +264,19 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         // backgroundColor: 'green'
+    },
+    PoIData: {
+        width: '100%',
+        alignSelf: 'flex-start',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+    },
+    PoIContent: {
+        width: '80%',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        flexDirection: 'column',
+        justifyContent: 'space-between'
     },
     subtitle: {
         fontFamily: 'Mukta-Bold',
@@ -242,13 +288,21 @@ const styles = StyleSheet.create({
     dataText: {
         fontFamily: 'Mukta-Medium',
         fontSize: 18,
+        lineHeight: 26,
         color: colors.bronzetone,
         marginRight: 10
 
     },
+    dataTextSmall: {
+        fontFamily: 'Mukta-Medium',
+        fontSize: 10,
+        lineHeight: 26,
+        color: colors.bronzetone,
+    },
     extensionText: {
         fontFamily: 'Mukta-Light',
-        fontSize: 12,
-        color: colors.bronzetone20
+        fontSize: 14,
+        lineHeight: 20,
+        color: colors.bronzetone60
     }, 
   });

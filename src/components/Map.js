@@ -8,12 +8,14 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, Button, Image, PermissionsAndroid} from 'react-native';
+import {Platform, StyleSheet, Text, View, Button, Image, PermissionsAndroid, AsyncStorage} from 'react-native';
 import Mapbox from '@mapbox/react-native-mapbox-gl';
 // import {name as appName} from './app.json';
 // import communesJSON from './communes-belges.json';
 import communesJSON from '../../Communes-belgique.json';
+import markersJSON from '../../markers.json';
 import { request } from 'graphql-request'
+import { store } from '../components/Store';
 
 
 // import * as turf from '@turf/turf';
@@ -41,7 +43,7 @@ import colors from '../components/utils/colors'
 import pattern from '../img/pattern-marble.png'
 import Modal from "react-native-modal";
 
-import { communesUpdate, communesCompletion, fetchData } from '../actions';
+import { markersUpdate, communesUpdate, communesCompletion, fetchData } from '../actions';
 
 import Queries from './queries';
 
@@ -192,9 +194,12 @@ class Map extends Component {
 
             this.watchPosition = navigator.geolocation.watchPosition(
                 (lastPosition) => {
-                    // console.log(lastPosition);
+                    console.log(lastPosition);
                     this.setState({lastPosition})
-                    this.drawCircle(lastPosition)
+
+                    const activeBonus = this.getActiveBonus().then(res => {
+                        this.drawCircle(res)
+                    })
                 },
                 (error) => { console.log(error) },
                 {enableHighAccuracy: true, timeout: 20000, maximumAge: 2000, distanceFilter: 10}
@@ -243,6 +248,7 @@ class Map extends Component {
             )
         }
         // console.log('HAS LOADED');
+        // console.log(this.props, store.getState());
 
         const communesShape = this.props.communes.features.map((commune, i) => {
             return (
@@ -372,53 +378,98 @@ class Map extends Component {
         console.log('generateMarkers')
         if (props.loading) return false;
 
-        const PoI = props.communes.features
-        .filter(mun => {
-            if (mun.properties.SHN == "BE421009" || mun.properties.SHN == "BE213002" || mun.properties.SHN == "BE233016") return false;
-            return true;
-        })
-        .map((mun, index) => {   
-            const newPolygon = polygon([mun.geometry.coordinates[0]])
-            const newPoint = pointOnFeature(newPolygon);
+        // const PoITest = props.communes.features
+        // .filter(mun => {
+        //     if (mun.properties.SHN == "BE421009" || mun.properties.SHN == "BE213002" || mun.properties.SHN == "BE233016") return false;
+        //     return true;
+        // })
+        // .map((mun, index) => {   
+        //     const newPolygon = polygon([mun.geometry.coordinates[0]])
+        //     const newPoint = pointOnFeature(newPolygon);
 
-            newPoint.properties.NAMN = mun.properties.NAMN
-            newPoint.properties.SHN = mun.properties.SHN
-            newPoint.properties.ID = mun.id
-            newPoint.properties.bonus = {
-                name: "Rayon d'exploration doublé",
-                duration: '30 jours'
-            }
+        //     newPoint.properties.NAMN = mun.properties.NAMN
+        //     newPoint.properties.SHN = mun.properties.SHN
+        //     newPoint.properties.ID = mun.id
 
-            // const mutation = `
-            //     mutation createPointOfInterest($data: String!, $id: ID!) {
-            //         createPointOfInterest(data: $data, municipalityId: $id) { id }
-            //     }`
+        //     if(index % 2 == 0) {
+        //         newPoint.properties.bonus = {
+        //             id: 1,
+        //             name: "Rayon d'exploration doublé",
+        //             duration: '30',
 
-            //     const commune = JSON.stringify(newPoint);
-            //     const variables = {
-            //         id: mun.id,
-            //         data: commune,
-            //     };
+        //         }
+        //     } else {
+        //         newPoint.properties.bonus = {
+        //             id: 2,
+        //             name: "Rayon d'exploration triplé",
+        //             duration: '10',
+        //         }
+        //     }
+        //     return newPoint;
+        // })
 
-            //     request('https://api.graph.cool/simple/v1/cjtfy59zu7gaj0138jz9a1xon', mutation, variables);
-         
+        // const newPoint2 = point([4.856387665236815, 50.465550770154636])
+        // newPoint2.properties.NAMN = 'Namur'
+        // newPoint2.properties.name = 'Bonus x2'
+        // newPoint2.properties.SHN = 'BE392094'
+        // newPoint2.properties.ID = "cjusk602e0c560119bxya4j1c"
+        // newPoint2.properties.bonus = {
+        //     id: 1,
+        //     name: "Rayon d'exploration doublé",
+        //     duration: '30'
+        // }
+        // const newPoint3 = point([4.922905, 50.494603])
+        // newPoint3.properties.NAMN = 'Namur'
+        // newPoint3.properties.name = 'Bonus x3'
+        // newPoint3.properties.SHN = 'BE392094'
+        // newPoint3.properties.ID = "cjusk602e0c560119bxya4j1c"
+        // newPoint3.properties.bonus = {
+        //     id: 2,
+        //     name: "Rayon d'exploration triplé",
+        //     duration: '10'
+        // }
+        // const newPoint4 = point([4.811559, 50.468674])
+        // newPoint4.properties.NAMN = 'Namur'
+        // newPoint4.properties.name = 'Bonus x2'
+        // newPoint4.properties.SHN = 'BE392094'
+        // newPoint4.properties.ID = "cjusk602e0c560119bxya4j1c"
+        // newPoint4.properties.bonus = {
+        //     id: 1,
+        //     name: "Rayon d'exploration doublé",
+        //     duration: '30'
+        // }
+        // const newPoint5 = point([4.876285, 50.465273])
+        // newPoint5.properties.NAMN = 'Namur'
+        // newPoint5.properties.name = 'Bonus x3'
+        // newPoint5.properties.SHN = 'BE392094'
+        // newPoint5.properties.ID = "cjusk602e0c560119bxya4j1c"
+        // newPoint5.properties.bonus = {
+        //     id: 2,
+        //     name: "Rayon d'exploration triplé",
+        //     duration: '10'
+        // }
 
-            // console.log(newPoint, mun); 
-            return newPoint;
-        })
 
-        const newPoint2 = point([4.856387665236815, 50.465550770154636])
-            newPoint2.properties.NAMN = 'Namur'
-            newPoint2.properties.name = 'Bonus 30'
-            newPoint2.properties.SHN = 'BE392094'
-            newPoint2.properties.ID = "cjusk602e0c560119bxya4j1c"
-            newPoint2.properties.bonus = {
-                name: "Rayon d'exploration doublé",
-                duration: '30 jours'
-            }
 
-        PoI.push(newPoint2)
+        // PoITest.push(newPoint2, newPoint3, newPoint4, newPoint5)
+        // console.log(JSON.stringify(PoITest));
 
+        let PoI = null;
+
+        if(store.getState().communes.markers.length > 0) {
+            PoI = store.getState().communes.markers
+        } else {
+            PoI = markersJSON;
+        }
+
+
+        // console.log(JSON.stringify(PoI));
+        // console.log(PoI, store.getState().communes.markers)
+
+        
+        this.props.markersUpdate(PoI);
+
+        // this.setState({ markers: PoI });
         this.setState({ markers: PoI });
     }
 
@@ -500,6 +551,8 @@ class Map extends Component {
 
                 if (isInCircle) {
                     this.toggleModalPoI(marker.properties)
+                    console.log(marker)
+                    this.storeBonus(marker.properties.bonus.id)
                 }
 
                 return !isInCircle;
@@ -508,56 +561,108 @@ class Map extends Component {
             return true;
         })
 
+        this.props.markersUpdate(markersFiltered);
         this.setState({ markers: markersFiltered })
+
+    }
+
+    async storeBonus(id) {
+        let activeBonus = await this.getActiveBonus()
+        let expiration = null
+        let now = new Date()
+        let mutiplier = 1
+        let duration = 0
+
+        if(activeBonus) {
+            const bonus = JSON.parse(activeBonus)
+            now = new Date(bonus.expiration)
+        }
+
+
+        switch(id) {
+            case 1:
+                expiration = now.setDate(now.getDate() + 30)
+                mutiplier = 2
+            break;
+            case 2: 
+                expiration = now.setDate(now.getDate() + 10)
+                mutiplier = 2
+            break;
+        }
+
+        const value = { expiration, mutiplier }
+        const data = JSON.stringify(value)
+
+        console.log(value, data)
+
+        try {
+            await AsyncStorage.setItem('activeBonus', data);
+        } catch (error) {
+            console.log(error)
+        }
     }
     
+    async getActiveBonus() {
+        try {
+          return AsyncStorage.getItem('activeBonus');
+        } catch (error) {
+          console.log(error)
+        }
 
-    async drawCircle(state) {
-        // console.log('draw circle state', state);
+        return false
+    }
 
+    async drawCircle(activeBonus) {        
         if (this.props.loading) return false; // prevents drawing before list of municipalities has been loaded
+        
+        try {
+            const position = [this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude];
 
-        const position = [this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude];
 
-        const center = position;
-        const radius = 0.1;
-        const options = {steps: 64, units: 'kilometers'};
+            const center = position;
+            const radius = activeBonus ? 0.3 : 0.075;
+            const options = {steps: 6, units: 'kilometers'};
 
-        let newCircle = circle(center, radius, options);
-        const circlePoI = newCircle
 
-        const communesShape = await this.props.communes.features.map((commune, i) => {
-            const isInPolygon = this.isPositionInPolygon(position, commune)
-            this.isGeometryCollection(commune);
+            let newCircle = circle(center, radius, options);
+            const circlePoI = newCircle
 
-            if (isInPolygon) {
-                let coords = commune.geometry.coordinates[0]
+            this.props.communes.features.map((commune, i) => {
+                const isInPolygon = this.isPositionInPolygon(position, commune)
+                this.isGeometryCollection(commune);
 
-                if (commune.geometry.coordinates.length === 2) { // if 2 arrays, then the first is a mask
-                    coords = commune.geometry.coordinates[1];
+                if (isInPolygon) {
+                    let coords = commune.geometry.coordinates[0]
 
-                    const actualMask = polygon([commune.geometry.coordinates[0]]);
-                    const intersection = intersect(actualMask, newCircle);
+                    if (commune.geometry.coordinates.length === 2) { // if 2 arrays, then the first is a mask
+                        coords = commune.geometry.coordinates[1];
 
-                    newCircle = intersection ? this.unionPolygons(actualMask, newCircle) : this.unionMultiPolygons(actualMask, newCircle);
+                        const actualMask = polygon([commune.geometry.coordinates[0]]);
+                        const intersection = intersect(actualMask, newCircle);
+
+                        newCircle = intersection ? this.unionPolygons(actualMask, newCircle) : this.unionMultiPolygons(actualMask, newCircle);
+                    }
+
+                    const poly1 = polygon([coords]);
+                    const newMask = mask(poly1, newCircle);
+        
+                    newMask.properties.SHN = commune.properties.SHN
+                    newMask.properties.NAMN = commune.properties.NAMN
+                    newMask.id = commune.id;
+                    
+                    const id = commune.id;
+
+                    this.props.communesUpdate(newMask, i, id);
+                    this.props.communesCompletion(newMask, i);
+                    this.isBonusRevealed(commune.properties.SHN, position, circlePoI)
+
                 }
-                const poly1 = polygon([coords]);
-                const newMask = mask(poly1, newCircle);
-    
-                newMask.properties.SHN = commune.properties.SHN
-                newMask.properties.NAMN = commune.properties.NAMN
-                newMask.id = commune.id;
-                
-                // console.log(commune, newMask, this.state)
-                const id = commune.id;
+            })
+        } catch (err) {
+            console.log(err);
+            return false
+        }
 
-                this.props.communesUpdate(newMask, i, id);
-                this.props.communesCompletion(newMask, i);
-
-                this.isBonusRevealed(commune.properties.SHN, position, circlePoI)
-
-            }
-        })
     }
 
     unionPolygons(poly1, poly2) {
@@ -633,6 +738,8 @@ class Map extends Component {
 
     getList() {
         // console.log("GET LIST", this.props)
+        console.log('map');
+
         const list = this.props.communes.features.map((commune) => {
         return this.getArea(commune);
       });
@@ -673,6 +780,7 @@ class Map extends Component {
 
     async onPressPathMask() {
         // console.log('PATH TO MASK');
+        console.log('map');
 
         const communesShape = await this.state.communes.features.map((commune, i) => {
             if(commune.properties.NAMN == 'Crisnée'){
@@ -701,6 +809,8 @@ class Map extends Component {
     }
     
     async onPressMaskMap() {
+        console.log('map');
+
         const communesShape = await communesJSON.features.map((commune, i) => {
             if(commune.properties.NAMN == 'Crisnée'){
                 var poly1 = polygon([commune.geometry.coordinates[0]]);
@@ -858,8 +968,8 @@ const mapStateToProps = state => {
         communes: state.communes.communes,
         list: state.list,
         loading: state.communes.loading,
-        error: state.communes.error
+        error: state.communes.error,
     })
 }
 
-export default connect(mapStateToProps, { fetchData, communesUpdate, communesCompletion })(Map);
+export default connect(mapStateToProps, { fetchData, communesUpdate, communesCompletion, markersUpdate })(Map);

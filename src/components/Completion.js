@@ -12,7 +12,7 @@ import { createStackNavigator, createAppContainer } from 'react-navigation';
 import Detail from './Detail'
 import CompletionItem from './completion-item'
 
-import store from '../components/Store';
+import { store } from '../components/Store';
 
 import Arrow from '../img/arrow-right.svg';
 import SearchIcon from '../img/search-icon.svg';
@@ -95,8 +95,8 @@ class Completion extends React.Component {
                 <CloudHeader2 style={completionStyles.header} width={width} height={ratio} bottom={0} fill={colors.white}/>
                 {this.searchList()}
                 <View style={completionStyles.titleContainer}>
-                    <Cloud style={completionStyles.cloud} width={55.5} height={35} fill={colors.oldLace}/>
-                    <Text style={completionStyles.maintitle}>Stats</Text>
+                    {/* <Cloud style={completionStyles.cloud} width={55.5} height={35} fill={colors.oldLace}/> */}
+                    <Text style={completionStyles.maintitle}>Progression</Text>
                 </View>
             </View>
           <FlatList
@@ -107,7 +107,6 @@ class Completion extends React.Component {
                 // const percent = `${item.percentage.toFixed(2)}%`;
                 // const percent = `${item.percentage}%`;
                 // const newArea = `${Math.round(item.area / 1000000)} km²`
-
               return(
                 <CompletionItem item={item} goto={() => navigate('Detail', { item })}/>
                 // <TouchableOpacity onPress={() => navigate('Detail', { id: item.id, name: item.name })} style={completionStyles.flatview} id={item.id}>
@@ -133,7 +132,7 @@ class Completion extends React.Component {
   /* Methods
   --------------------------------------------------------- */
   getList() {
-    //   console.log('TIS PROPS GET LIST',this.props)
+      console.log('TIS PROPS GET LIST', store.getState())
     const list = store.getState().communes.communes.features.map((commune, i) => {
       return this.getArea(commune, i);
     });
@@ -176,7 +175,8 @@ class Completion extends React.Component {
       area: newArea,
       explored,
       percentage,
-      name
+      name,
+      SHN: feature.properties.SHN
   }
 }
 
@@ -285,14 +285,14 @@ const completionStyles = StyleSheet.create({
         marginLeft: 'auto',
         marginRight: 'auto',
         alignItems: 'flex-start',
-        justifyContent: 'flex-start',
+        justifyContent: 'center',
         position: 'relative',
     },
     maintitle: {
-        fontSize: 60,
+        fontSize: 48,
         fontFamily: 'Mukta-Bold',     
         color: colors.bronzetone ,
-
+        marginTop: 18
     },
     cloud: {
         position: 'absolute',
