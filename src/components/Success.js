@@ -34,7 +34,8 @@ static navigationOptions = ({ navigation }) => {
         successData: null,
         searchInput: '',
         listSource: [],
-        listfiltered: []
+        listfiltered: [],
+        allSuccess: [],
     }
 
     this.listholder = this.props.list
@@ -65,6 +66,7 @@ static navigationOptions = ({ navigation }) => {
       const ratio = width / 3.333;
       const { navigate } = this.props.navigation;
       const numColumns = 3
+      const unlockedSuccesses = this.state.listSource.filter(el => el.isUnlocked)
 
     return (
       <View style={completionStyles.container}>
@@ -79,16 +81,14 @@ static navigationOptions = ({ navigation }) => {
             </View>
             <View style={completionStyles.infos}>
                 <Text style={completionStyles.score}>Succès débloqués</Text>
-                <Text style={completionStyles.score}>0 / 589</Text>
+                <Text style={completionStyles.score}>{unlockedSuccesses.length} / {this.state.listSource.length}</Text>
             </View>
             <FlatList
                 data={this.sortList(this.state.listfiltered)}
                 numColumns={numColumns}
                 renderItem={({item}) => {
-
-                return(
+                return (
                     <SuccessItem item={item} openModal={() => {this.toggleModal(item)}}/>
-        
                     )
                 }}
                 keyExtractor={(item) => item.id}
@@ -125,7 +125,7 @@ static navigationOptions = ({ navigation }) => {
             return (
                 <View style={completionStyles.modal}>
                     <Text style={completionStyles.modalContent}>{data.name}</Text>
-                    <Text style={completionStyles.modalContent}>{`${data.explored}% exploré`}</Text>
+                    <Text style={completionStyles.modalContent}>{`${data.percentage.toFixed(1)}% exploré`}</Text>
                 </View>
             );
         }
@@ -174,7 +174,8 @@ static navigationOptions = ({ navigation }) => {
       explored,
       percentage,
       name,
-      SHN: feature.properties.SHN
+      SHN: feature.properties.SHN,
+      isUnlocked: percentage >= 1
   }
 }
 
@@ -214,8 +215,7 @@ static navigationOptions = ({ navigation }) => {
                 paddingRight: 0,
                 position: 'absolute',
                 bottom: 24,
-                width: '80%',
-                
+                width: '80%',                
             }
         }        
         inputContainerStyle={
@@ -224,13 +224,15 @@ static navigationOptions = ({ navigation }) => {
                 borderRadius: 50,
                 height: 42,
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                paddingHorizontal: 18           
             }
         }    
         inputStyle={{
             fontFamily: 'Mukta-Regular',
             paddingTop: 0,
-            paddingBottom: 0
+            paddingBottom: 0,
+            flex: 1
         }}    
         onChangeText={text => this.searchFilterFunction(text)}
         value={this.state.searchInput}
@@ -240,9 +242,16 @@ static navigationOptions = ({ navigation }) => {
   }
 
   filterList(text) {
-    const copy = this.state.listSource;
+    const lowerText = text.toLowerCase()
+    const copy = this.state.listSource
+    const unlockedItems = ['déverouillé', 'débloqué', 'debloque', 'disponible', 'dispo']
+    const lockedItems = ['verrouillé', 'bloqué', 'bloque', 'indisponible', 'indispo']
+
     const newState = copy.filter(item => {
-        return item.name.indexOf(text) > -1;
+        const isUnlocked = unlockedItems.includes(lowerText)
+        const isLocked = lockedItems.includes(lowerText)
+        const name = item.name.toLowerCase()
+        return name.indexOf(lowerText) > -1 || item.isUnlocked === isUnlocked || item.isLocked === !isLocked;
     });
 
     this.setState({

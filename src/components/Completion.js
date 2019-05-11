@@ -227,7 +227,8 @@ class Completion extends React.Component {
                 borderRadius: 50,
                 height: 42,
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                paddingHorizontal: 18
             }
         }    
         inputStyle={{

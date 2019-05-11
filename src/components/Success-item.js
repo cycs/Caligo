@@ -8,30 +8,28 @@ import Cloud from '../img/cloud.svg';
 export default class SuccessItem extends PureComponent {
   render() {
       console.log(this.props)
-    const percent = this.props.item.percentage.toFixed(2);
-    const newArea = `${Math.round(this.props.item.area / 1000000)} km²`
-    let index = 0
+    const percent = Math.floor(this.props.item.percentage);
+    let uri = require(`../img/success/success-namur-step_0.png`)
 
-    if(percent >= 1) {
-        index = 1
-    } else if(percent >=10) {
-        index = 2
+    if(percent >= 100) {
+        uri = require(`../img/success/success-namur-step_5.png`)
+    } else if(percent >=50) {
+        uri = require(`../img/success/success-namur-step_4.png`)
     } else if(percent >=25) {
-        index = 3
-    } else if(percent == 100){
-        index = 5
-    } else {
-        index = 4
+        uri = require(`../img/success/success-namur-step_3.png`)
+    } else if(percent >= 10){
+        uri = require(`../img/success/success-namur-step_2.png`)
+    } else if(percent >= 1){
+        uri = require(`../img/success/success-namur-step_1.png`)
     }
 
-    const uri = `../img/success/success-namur-step_1.png`
     return (
         <TouchableOpacity onPress={() => {this.props.openModal()}} style={styles.flatview} id={this.props.item.id}>
             <View style={styles.flatview}>
                 {/* <Cloud style={styles.cloud} width={55.5} height={35} fill={colors.sanJuan}/> */}
                 <Image
                     style={{width: 64, height: 50, marginBottom: 10}}
-                    source={require(`../img/success/success-namur-step_${1}.png`)}
+                    source={uri}
                 />
                 <Text>{this.props.item.name}</Text>
             </View >

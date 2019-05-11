@@ -620,7 +620,7 @@ class Map extends Component {
 
 
             const center = position;
-            const radius = activeBonus ? 0.3 : 0.075;
+            const radius = activeBonus ? 0.09 : 0.045;
             const options = {steps: 6, units: 'kilometers'};
 
 
