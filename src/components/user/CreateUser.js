@@ -34,7 +34,7 @@ class CreateUser extends Component {
     createUser = async ({ email, password }) => {
 
         // Ligne à supprimer - Empeche de s'enregistrer
-        return false;
+        // return false;
 
 
 
@@ -49,23 +49,23 @@ class CreateUser extends Component {
 
             console.log(user, this.props, signin.data.signinUser.token)
 
-            const mutation = `
-                mutation createMunicipality($data: String!, $id: ID!) {
-                    createMunicipality(data: $data, userId: $id) { id }
-                }`
+            // const mutation = `
+            //     mutation createMunicipality($data: String!, $id: ID!) {
+            //         createMunicipality(data: $data, userId: $id) { id }
+            //     }`
 
-            communesJSON.features.map((com, i) => {
-                // if(i != 1) return false;
-                const commune = JSON.stringify(com);
-                // console.log(user.data.createUser.id, commune)
+            // communesJSON.features.map((com, i) => {
+            //     // if(i != 1) return false;
+            //     const commune = JSON.stringify(com);
+            //     // console.log(user.data.createUser.id, commune)
 
-                const variables = {
-                    id: user.data.createUser.id,
-                    data: commune,
-                };
+            //     const variables = {
+            //         id: user.data.createUser.id,
+            //         data: commune,
+            //     };
 
-                request('https://api.graph.cool/simple/v1/cjtfy59zu7gaj0138jz9a1xon', mutation, variables);
-            })
+            //     request('https://api.graph.cool/simple/v1/cjtfy59zu7gaj0138jz9a1xon', mutation, variables);
+            // })
 
 
             // this.props.onCompleted((data) => console.log(data))

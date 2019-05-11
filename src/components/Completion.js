@@ -123,7 +123,7 @@ class Completion extends React.Component {
                 // </TouchableOpacity >
                 )
             }}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item, i) => item.id || i.toString()}
         />
       </View>
     );

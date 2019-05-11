@@ -7,7 +7,7 @@ import Cloud from '../img/cloud.svg';
 
 export default class SuccessItem extends PureComponent {
   render() {
-      console.log(this.props)
+    //   console.log(this.props)
     const percent = Math.floor(this.props.item.percentage);
     let uri = require(`../img/success/success-namur-step_0.png`)
 

@@ -91,7 +91,7 @@ static navigationOptions = ({ navigation }) => {
                     <SuccessItem item={item} openModal={() => {this.toggleModal(item)}}/>
                     )
                 }}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item, i) => item.id || i.toString()}
             />
             <Modal 
                 isVisible={this.state.isVisible} 

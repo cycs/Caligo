@@ -12,7 +12,8 @@ import {Platform, StyleSheet, Text, View, Button, Image, PermissionsAndroid, Asy
 import Mapbox from '@mapbox/react-native-mapbox-gl';
 // import {name as appName} from './app.json';
 // import communesJSON from './communes-belges.json';
-import communesJSON from '../../Communes-belgique.json';
+// import communesJSON from '../../Communes-belgique.json';
+import communesJSON from '../../communes-minify.json';
 import markersJSON from '../../markers.json';
 import { request } from 'graphql-request'
 import { store } from '../components/Store';
@@ -248,7 +249,7 @@ class Map extends Component {
             )
         }
         // console.log('HAS LOADED');
-        // console.log(this.props, store.getState());
+        console.log(this.props, store.getState());
 
         const communesShape = this.props.communes.features.map((commune, i) => {
             return (
@@ -616,6 +617,8 @@ class Map extends Component {
         if (this.props.loading) return false; // prevents drawing before list of municipalities has been loaded
         
         try {
+            console.log(AsyncStorage.getItem('USER').then(data => console.log(data)))
+            console.log(this.props)
             const position = [this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude];
 
 
@@ -627,6 +630,7 @@ class Map extends Component {
             let newCircle = circle(center, radius, options);
             const circlePoI = newCircle
 
+            console.log(this.props.communes.features[0]);
             this.props.communes.features.map((commune, i) => {
                 const isInPolygon = this.isPositionInPolygon(position, commune)
                 this.isGeometryCollection(commune);
@@ -648,13 +652,44 @@ class Map extends Component {
         
                     newMask.properties.SHN = commune.properties.SHN
                     newMask.properties.NAMN = commune.properties.NAMN
-                    newMask.id = commune.id;
-                    
-                    const id = commune.id;
 
-                    this.props.communesUpdate(newMask, i, id);
-                    this.props.communesCompletion(newMask, i);
-                    this.isBonusRevealed(commune.properties.SHN, position, circlePoI)
+                    if(commune.id) {
+                        newMask.id = commune.id;
+                        
+                        const id = commune.id;
+
+                        this.props.communesUpdate(newMask, i, id);
+                        this.props.communesCompletion(newMask, i);
+                        this.isBonusRevealed(commune.properties.SHN, position, circlePoI)
+                    } else {
+                        AsyncStorage.getItem('USER').then(userId => {
+                            console.log(userId)
+                            const mutation = `
+                                mutation createMunicipality($data: String!, $id: ID!) {
+                                    createMunicipality(data: $data, userId: $id) { id }
+                                }`
+
+                            const stringCommune = JSON.stringify(commune);
+
+                            const newVariables = {
+                                id: userId,
+                                data: stringCommune,
+                            };
+
+                            request('https://api.graph.cool/simple/v1/cjtfy59zu7gaj0138jz9a1xon', mutation, newVariables).then((newData) => {
+                                console.log(newData)    
+                                newMask.id = newData.createMunicipality.id;
+                        
+                                const id = newData.createMunicipality.id;
+        
+                                this.props.communesUpdate(newMask, i, id);
+                                this.props.communesCompletion(newMask, i);
+                                this.isBonusRevealed(commune.properties.SHN, position, circlePoI)
+                            });
+
+                        })
+
+                    }
 
                 }
             })
