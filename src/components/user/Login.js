@@ -37,7 +37,7 @@ class Login extends Component {
             /> */}
         </View>
         <View style={styles.titleContainer}>
-            <Belgium style={styles.belgium} width={120} height={120} stroke={colors.bronzetone5} fill='none'/>
+            {/* <Belgium style={styles.belgium} width={120} height={120} stroke={colors.bronzetone5} fill='none'/> */}
             <LogoTitle style={styles.logotitle} width={180} height={50} fill={colors.bronzetone}/>
             <Text style={styles.subtitle}>Marche. Explore. Dévoile.</Text>
         </View>

@@ -65,6 +65,10 @@ const NavWrapper = ({ user, loading, fetchData }) => {
     if (!user) return <Login />
 
     AsyncStorage.setItem('USER', user.id);
+    console.log(user)
+    if(user.nickname) {
+        AsyncStorage.setItem('USER_NAME', user.nickname);
+    }
 
     return <Container screenProps={{ user }}/>
 } 
@@ -72,6 +76,7 @@ const NavWrapper = ({ user, loading, fetchData }) => {
 const userQuery = gql`
     query userQuery {
         user {
+            nickname,
             id,
             email
         }

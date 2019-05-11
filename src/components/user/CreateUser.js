@@ -31,7 +31,7 @@ class CreateUser extends Component {
 
   /* Methods
   --------------------------------------------------------- */
-    createUser = async ({ email, password }) => {
+    createUser = async ({ nickname, email, password }) => {
 
         // Ligne à supprimer - Empeche de s'enregistrer
         // return false;
@@ -40,7 +40,7 @@ class CreateUser extends Component {
 
         try {
             const user = await this.props.createUser({ 
-                variables: { email, password }
+                variables: { nickname, email, password }
             });
 
             const signin = await this.props.signinUser({
@@ -89,8 +89,9 @@ const createDB = gql`
 `;
 
 const createUser = gql`
-    mutation createUser($email: String!, $password: String!) {
+    mutation createUser($nickname: String!, $email: String!, $password: String!) {
         createUser(
+            nickname: $nickname,
             authProvider: { email: {
                 email: $email
                 password: $password

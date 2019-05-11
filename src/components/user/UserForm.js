@@ -9,8 +9,9 @@ export default class UserForm extends Component {
         password: "",
     }
     submitForm = () => {
-        const { email, password } = this.state;
+        const { nickname, email, password } = this.state;
         this.props.onSubmit({
+            nickname,
             email, 
             password
         })
@@ -26,7 +27,10 @@ export default class UserForm extends Component {
             <View>
                 <Item floatingLabel style={styles.item}> 
                     <Label style={styles.label}>Pseudo</Label>
-                    <Input/>
+                    <Input
+                    value={this.state.nickname}
+                    onChangeText={nickname => this.setState({ nickname })}
+                    />
                 </Item>
                 <Item floatingLabel style={styles.item}>
                     <Label style={styles.label}>Email</Label>
@@ -40,7 +44,7 @@ export default class UserForm extends Component {
         } else {
             itemSign = 
             <Item floatingLabel style={styles.item}>
-                <Label style={styles.label}>Email ou pseudo</Label>
+                <Label style={styles.label}>Email</Label>
                 <Input
                 keyboardType="email-address"
                 value={this.state.email}
