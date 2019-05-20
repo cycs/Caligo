@@ -10,9 +10,12 @@ import { communesUpdate, communesCompletion, fetchData } from './src/actions';
 import { AsyncStorage, Button } from 'react-native';
 import { withApollo } from 'react-apollo';
 import Detail from './src/components/Detail'
+import Loading from './src/components/utils/Loading'
 
 import Login from './src/components/user/Login';
 import { signOut } from './src/components/utils/loginUtils'
+import { View } from 'native-base';
+import OfflineNotice from './src/components/utils/OfflineNotice'
 
 // if (process.env.NODE_ENV !== 'production') {
 //     const {whyDidYouUpdate} = require('why-did-you-update')
@@ -60,17 +63,24 @@ const AppStackNavigator = createStackNavigator({
 
 const Container = createAppContainer(AppStackNavigator)
 
-const NavWrapper = ({ user, loading, fetchData }) => {
-    if (loading) return <ActivityIndicator size="large" />
+const NavWrapper = ({ user, loading }) => {
+    // if (loading) return <ActivityIndicator size="large" />
+    if (loading) return <Loading />
     if (!user) return <Login />
 
     AsyncStorage.setItem('USER', user.id);
-    console.log(user)
+    AsyncStorage.setItem('USER_EMAIL', user.email);
+
     if(user.nickname) {
         AsyncStorage.setItem('USER_NAME', user.nickname);
     }
 
-    return <Container screenProps={{ user }}/>
+    return (
+        <View>
+            <OfflineNotice />
+            <Container screenProps={{ user }}/>
+        </View> 
+    )
 } 
 
 const userQuery = gql`

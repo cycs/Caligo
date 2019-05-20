@@ -12,10 +12,9 @@ import SuccessItem from './Success-item'
 import Modal from "react-native-modal";
 
 import { store } from '../components/Store';
-
+import Header from './Header'
 
 import SearchIcon from '../img/search-icon.svg';
-import CloudHeader2 from '../img/header-completion.svg';
 
 export default class Success extends Component {
     
@@ -70,14 +69,10 @@ static navigationOptions = ({ navigation }) => {
 
     return (
       <View style={completionStyles.container}>
-            <View style={completionStyles.headerContainer}>
-                <CloudHeader2 style={completionStyles.header} width={width} height={ratio} bottom={0} fill={colors.white}/>
+            
+            <Header text='Succès'/>
+            <View style={{alignItems: 'center'}}>
                 {this.searchList()}
-                <View style={completionStyles.titleContainer}>
-                    {/* <Text> */}
-                        <Text style={completionStyles.maintitle}>Succès</Text>
-                    {/* </Text> */}
-                </View>
             </View>
             <View style={completionStyles.infos}>
                 <Text style={completionStyles.score}>Succès débloqués</Text>
@@ -110,7 +105,7 @@ static navigationOptions = ({ navigation }) => {
   /* Methods
   --------------------------------------------------------- */
   toggleModal = (item) => {
-      console.log(item);
+    //   console.log(item);
     this.setState({ 
         isVisible: !this.state.isVisible,
         successData: item
@@ -121,7 +116,7 @@ static navigationOptions = ({ navigation }) => {
   renderModal = () => {
         if (this.state.successData !== null) {
             const data = this.state.successData
-            console.log(data)
+            // console.log(data)
             return (
                 <View style={completionStyles.modal}>
                     <Text style={completionStyles.modalContent}>{data.name}</Text>
@@ -134,7 +129,7 @@ static navigationOptions = ({ navigation }) => {
     }
 
   getList() {
-      console.log('TIS PROPS GET LIST', store.getState())
+    //   console.log('TIS PROPS GET LIST', store.getState())
     const list = store.getState().communes.communes.features.map((commune, i) => {
       return this.getArea(commune, i);
     });
@@ -213,7 +208,6 @@ static navigationOptions = ({ navigation }) => {
                 paddingTop: 0,
                 paddingLeft: 0,
                 paddingRight: 0,
-                position: 'absolute',
                 bottom: 24,
                 width: '80%',                
             }
@@ -309,17 +303,18 @@ const completionStyles = StyleSheet.create({
     },
     headerContainer: {
         position: 'relative',
-        height: 180,
+        height: 120,
         alignItems: 'center',
-        backgroundColor: colors.goldenTainoi
+        // backgroundColor: colors.goldenTainoi
     },
     header: {
         position: 'absolute',
-        bottom: 0,
     },
     container: {
       flex: 1,
-      position: 'relative'
+      position: 'relative',
+    backgroundColor: colors.oldLace
+
     },  
     infos: {
         width: '80%', 

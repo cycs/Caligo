@@ -35,7 +35,7 @@ const pReducer = persistReducer(persistConfig, allReducers);
 // const store = createStore(communesReducer);
 export const store = createStore(pReducer, applyMiddleware(...middleware));
 export const persistor = persistStore(store);
-persistor.purge()
+// persistor.purge()
 // console.log('STORE GETSTATE', store.getState());
 
 

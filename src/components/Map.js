@@ -37,6 +37,7 @@ import PositionButton from './PositionButton';
 import CreateCommunes from '../graphql/createCommunes';
 import Completion from './Completion';
 import Point from './interest/points'
+import Loading from './utils/Loading'
 
 import markerMyPosition from '../img/marker.png';
 import { connect } from 'react-redux';
@@ -195,7 +196,7 @@ class Map extends Component {
 
             this.watchPosition = navigator.geolocation.watchPosition(
                 (lastPosition) => {
-                    console.log(lastPosition);
+                    // console.log(lastPosition);
                     this.setState({lastPosition})
 
                     const activeBonus = this.getActiveBonus().then(res => {
@@ -243,13 +244,11 @@ class Map extends Component {
     render() {
         if (this.props.loading) {
             return (
-                <View style={styles.loadingContainer}>
-                    <Text style={styles.loading}>loading...</Text>
-                </View>
+                <Loading />
             )
         }
         // console.log('HAS LOADED');
-        console.log(this.props, store.getState());
+        // console.log(this.props, store.getState());
 
         const communesShape = this.props.communes.features.map((commune, i) => {
             return (
@@ -376,7 +375,7 @@ class Map extends Component {
     /* Methods
     --------------------------------------------------------- */
     generateMarkers = (props = this.props) => {
-        console.log('generateMarkers')
+        // console.log('generateMarkers')
         if (props.loading) return false;
 
         // const PoITest = props.communes.features
@@ -478,7 +477,7 @@ class Map extends Component {
         const { screenPointX, screenPointY, } = e.properties        
         const screenCoords = [screenPointX, screenPointY];
 
-        console.log(screenCoords)
+        // console.log(screenCoords)
 
         const PoI = await this._map.queryRenderedFeaturesInRect(
             this.getBoundingBox(screenCoords),
@@ -552,7 +551,7 @@ class Map extends Component {
 
                 if (isInCircle) {
                     this.toggleModalPoI(marker.properties)
-                    console.log(marker)
+                    // console.log(marker)
                     this.storeBonus(marker.properties.bonus.id)
                 }
 
@@ -594,7 +593,7 @@ class Map extends Component {
         const value = { expiration, mutiplier }
         const data = JSON.stringify(value)
 
-        console.log(value, data)
+        // console.log(value, data)
 
         try {
             await AsyncStorage.setItem('activeBonus', data);
@@ -617,20 +616,20 @@ class Map extends Component {
         if (this.props.loading) return false; // prevents drawing before list of municipalities has been loaded
         
         try {
-            console.log(AsyncStorage.getItem('USER').then(data => console.log(data)))
-            console.log(this.props)
+            // console.log(AsyncStorage.getItem('USER').then(data => console.log(data)))
+            // console.log(this.props)
             const position = [this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude];
 
 
             const center = position;
             const radius = activeBonus ? 0.09 : 0.045;
-            const options = {steps: 6, units: 'kilometers'};
+            const options = {steps: 64, units: 'kilometers'};
 
 
             let newCircle = circle(center, radius, options);
             const circlePoI = newCircle
 
-            console.log(this.props.communes.features[0]);
+            // console.log(this.props.communes.features[0]);
             this.props.communes.features.map((commune, i) => {
                 const isInPolygon = this.isPositionInPolygon(position, commune)
                 this.isGeometryCollection(commune);
@@ -663,7 +662,7 @@ class Map extends Component {
                         this.isBonusRevealed(commune.properties.SHN, position, circlePoI)
                     } else {
                         AsyncStorage.getItem('USER').then(userId => {
-                            console.log(userId)
+                            // console.log(userId)
                             const mutation = `
                                 mutation createMunicipality($data: String!, $id: ID!) {
                                     createMunicipality(data: $data, userId: $id) { id }
@@ -677,7 +676,7 @@ class Map extends Component {
                             };
 
                             request('https://api.graph.cool/simple/v1/cjtfy59zu7gaj0138jz9a1xon', mutation, newVariables).then((newData) => {
-                                console.log(newData)    
+                                // console.log(newData)    
                                 newMask.id = newData.createMunicipality.id;
                         
                                 const id = newData.createMunicipality.id;
@@ -773,7 +772,7 @@ class Map extends Component {
 
     getList() {
         // console.log("GET LIST", this.props)
-        console.log('map');
+        // console.log('map');
 
         const list = this.props.communes.features.map((commune) => {
         return this.getArea(commune);
@@ -844,7 +843,7 @@ class Map extends Component {
     }
     
     async onPressMaskMap() {
-        console.log('map');
+        // console.log('map');
 
         const communesShape = await communesJSON.features.map((commune, i) => {
             if(commune.properties.NAMN == 'Crisnée'){
@@ -884,8 +883,8 @@ class Map extends Component {
     onRegionDidChange(data) {
         
         if (!this._map) return false;
-        console.log(this._map);
-        console.log(data);
+        // console.log(this._map);
+        // console.log(data);
         const lon = data.geometry.coordinates[0]
         const lat = data.geometry.coordinates[1]
 

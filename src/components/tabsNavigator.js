@@ -13,6 +13,7 @@ const styles = {
         paddingTop: 0,
         paddingBottom: 0,
         borderTopWidth: 0,
+        backgroundColor: colors.oldLace
     },
     icon: {
         width: 32,

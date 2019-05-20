@@ -92,24 +92,24 @@ export default class Detail extends Component {
                     })
                     // var testRE = svg.match('(?<=d=")(.*)Z');
 
-                    const dir_path = RNFS.ExternalDirectoryPath
-                    var path = dir_path + `/${this.props.navigation.state.params.name}.svg`;
+                    // const dir_path = RNFS.ExternalDirectoryPath
+                    // var path = dir_path + `/${this.props.navigation.state.params.name}.svg`;
 
-                        RNFS.writeFile(path, 'hello', 'utf8')
-                        .then((success) => {
-                            // console.log(RNFS, 'FILE WRITTEN!');
+                    //     RNFS.writeFile(path, 'hello', 'utf8')
+                    //     .then((success) => {
+                    //         // console.log(RNFS, 'FILE WRITTEN!');
 
-                            // RNFS.scanFile(`${dir_path}/${this.props.navigation.state.params.name}.svg`).then((res) => {
-                            //     console.log(`${this.props.navigation.state.params.name} SUCCESSFULLY SCANED`)
-                            // })
+                    //         // RNFS.scanFile(`${dir_path}/${this.props.navigation.state.params.name}.svg`).then((res) => {
+                    //         //     console.log(`${this.props.navigation.state.params.name} SUCCESSFULLY SCANED`)
+                    //         // })
 
-                            RNFS.readDir(dir_path).then((files) => {
-                                // console.log(files)
-                            })   
-                        })
-                        .catch((err) => {
-                            console.log(err.message);
-                        });
+                    //         RNFS.readDir(dir_path).then((files) => {
+                    //             // console.log(files)
+                    //         })   
+                    //     })
+                    //     .catch((err) => {
+                    //         console.log(err.message);
+                    //     });
 
 
                 }
@@ -121,7 +121,7 @@ export default class Detail extends Component {
         const ratio = width / 3.333;
         const { navigate } = this.props.navigation;
         const { item } = this.props.navigation.state.params;
-        console.log(this.props, this.props.navigation.state.params.name);
+        // console.log(this.props, this.props.navigation.state.params.name);
 
         let filteredMarkers = <Text>Aucun point d'intérêt restant</Text>
         
@@ -143,7 +143,7 @@ export default class Detail extends Component {
                     )
                 })
         }
-        console.log(filteredMarkers)
+        // console.log(filteredMarkers)
 
         return (
             <View>

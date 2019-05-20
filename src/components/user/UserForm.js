@@ -106,11 +106,13 @@ const styles = StyleSheet.create({
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 30
+        marginTop: 30,
+        elevation: 0
     },
     buttonText: {
-        color: colors.white,
-        fontFamily: 'Mukta-regular',
+        color: colors.bronzetone,
+        fontSize: 16,
+        fontFamily: 'Mukta-Bold',
        
     }
 });

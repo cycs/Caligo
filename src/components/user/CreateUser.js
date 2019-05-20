@@ -6,6 +6,7 @@ import gql from 'graphql-tag'
 import { signIn } from '../utils/loginUtils'
 import { request } from 'graphql-request'
 import colors from '../utils/colors'
+import ErrorHandling from '../utils/ErrorHandling'
 
 
 import communesJSON from '../../../communes-minify.json';
@@ -13,20 +14,27 @@ import communesJSON from '../../../communes-minify.json';
 class CreateUser extends Component {
     constructor(props) {
         super(props)
+
+        this.state = {
+            wrongUserData: {
+                message: null,
+                hasError: false
+            }
+        }
     }
   
   /* Lfecycle methods
   --------------------------------------------------------- */
     render() { 
-    return (
-        <View>
-        {/* <Text style={styles.text}>Register</Text> */}
-        <UserForm 
-            type="S'enregistrer" 
-            action="signup"
-            onSubmit={this.createUser}/>
-        </View>
-    )
+        return (
+            <View>
+            {this.state.wrongUserData.hasError && <ErrorHandling text={this.state.wrongUserData.message} />}
+            <UserForm 
+                type="S'enregistrer" 
+                action="signup"
+                onSubmit={this.createUser}/>
+            </View>
+        )
   }
 
   /* Methods
@@ -39,6 +47,12 @@ class CreateUser extends Component {
 
 
         try {
+            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            
+            if(!re.test(email) && password.length < 9) throw new Error('Email non-valide et mot de passe trop court')
+            if(password.length < 9) throw new Error('Mot de passe trop court (8 caractères minimum)')
+            if(!re.test(email)) throw new Error('Email non-valide')
+
             const user = await this.props.createUser({ 
                 variables: { nickname, email, password }
             });
@@ -47,7 +61,7 @@ class CreateUser extends Component {
                 variables: { email, password }
             });
 
-            console.log(user, this.props, signin.data.signinUser.token)
+            // console.log(user, this.props, signin.data.signinUser.token)
 
             // const mutation = `
             //     mutation createMunicipality($data: String!, $id: ID!) {
@@ -73,7 +87,16 @@ class CreateUser extends Component {
             this.props.client.resetStore();
 
         } catch (e) {
-            console.log(e)
+            let message = e.message || 'Erreur'
+
+            this.setState({ 
+                wrongUserData: {
+                    hasError:true,
+                    message
+                } 
+            })
+
+            setTimeout(() => this.setState({wrongUserData: {hasError: false}}), 6000)
         }
     }
 }

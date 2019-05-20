@@ -3,6 +3,8 @@ const colors = {
     
     white: '#FFFFFF',
     oldLace: '#FEFAF3',
+    oldLace60: 'rgba(254, 250, 243, .6)',
+    oldLace80: 'rgba(254, 250, 243, .8)',
     ecruWhite: 'rgb(243, 239, 223)',
     parchment: 'rgb(238, 231, 207)',
     goldenTainoi: '#FFCB51',

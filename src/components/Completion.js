@@ -21,6 +21,7 @@ import HeaderBG from '../img/header-list.svg';
 import CloudHeader from '../img/cloud-header.svg';
 import CloudHeader2 from '../img/header-completion.svg';
 // import HeaderBG from '../img/header-list-cloudy.svg';
+import Header from './Header'
 
 class Completion extends React.Component {
     
@@ -41,10 +42,6 @@ class Completion extends React.Component {
 
     this.listholder = this.props.list
 
-    // console.log(store.getState().communes.communes)
-    // console.log(this.props.navigation)
-
- 
 
   }
 
@@ -85,46 +82,24 @@ class Completion extends React.Component {
 
     return (
       <View style={completionStyles.container}>
-            <View style={completionStyles.headerContainer}>
-                {/* <Image 
-                    source={require('../img/header-completion.png')}
-                    style={{position:'absolute', width:'100%', left:-1, bottom:0}}
-                /> */}
-                {/* <HeaderBG style={completionStyles.header} bottom={0} width={width} fill={colors.goldenTainoi}/> */}
-                {/* <CloudHeader style={completionStyles.header} width='100%' height={500} fill={colors.goldenTainoi}/> */}
-                <CloudHeader2 style={completionStyles.header} width={width} height={ratio} bottom={0} fill={colors.white}/>
+            <Header text='Progression'/>
+            <View style={{alignItems: 'center'}}>
                 {this.searchList()}
-                <View style={completionStyles.titleContainer}>
-                    {/* <Cloud style={completionStyles.cloud} width={55.5} height={35} fill={colors.oldLace}/> */}
-                    <Text style={completionStyles.maintitle}>Progression</Text>
-                </View>
             </View>
-          <FlatList
-            // ItemSeparatorComponent={this.renderSeparator}
-            // extraData={this.state}
-            data={this.sortList(this.state.listfiltered)}
-            renderItem={({item}) => {
-                // const percent = `${item.percentage.toFixed(2)}%`;
-                // const percent = `${item.percentage}%`;
-                // const newArea = `${Math.round(item.area / 1000000)} km²`
-              return(
-                <CompletionItem item={item} goto={() => navigate('Detail', { item })}/>
-                // <TouchableOpacity onPress={() => navigate('Detail', { id: item.id, name: item.name })} style={completionStyles.flatview} id={item.id}>
-                //   <View style={completionStyles.infos}>
-                //     <Text style={completionStyles.name}>{item.name}</Text>
-                //     <Text style={completionStyles.area}>{newArea}</Text>
-                //   </View>
-                //   <View style={completionStyles.percentContainer}>
-                //     <Text style={completionStyles.percentage}>{percent}</Text>
-                //   </View>
-                //   <View style={completionStyles.arrowContainer}>
-                //     <Arrow height={15} width={15} fill={colors.bronzetone}/>
-                //   </View>
-                // </TouchableOpacity >
-                )
-            }}
-            keyExtractor={(item, i) => item.id || i.toString()}
-        />
+            <FlatList
+                // ItemSeparatorComponent={this.renderSeparator}
+                // extraData={this.state}
+                data={this.sortList(this.state.listfiltered)}
+                renderItem={({item}) => {
+                    // const percent = `${item.percentage.toFixed(2)}%`;
+                    // const percent = `${item.percentage}%`;
+                    // const newArea = `${Math.round(item.area / 1000000)} km²`
+                return(
+                    <CompletionItem item={item} goto={() => navigate('Detail', { item })}/>
+                    )
+                }}
+                keyExtractor={(item, i) => item.id || i.toString()}
+            />
       </View>
     );
   }
@@ -132,7 +107,7 @@ class Completion extends React.Component {
   /* Methods
   --------------------------------------------------------- */
   getList() {
-      console.log('TIS PROPS GET LIST', store.getState())
+    //   console.log('TIS PROPS GET LIST', store.getState())
     const list = store.getState().communes.communes.features.map((commune, i) => {
       return this.getArea(commune, i);
     });
@@ -167,7 +142,6 @@ class Completion extends React.Component {
   const percentage = explored / newArea * 100;
   const name = feature.properties.NAMN;
 
-//   console.log(percentage);
 
   return {
       id: feature.id,
@@ -215,7 +189,6 @@ class Completion extends React.Component {
                 paddingTop: 0,
                 paddingLeft: 0,
                 paddingRight: 0,
-                position: 'absolute',
                 bottom: 24,
                 width: '80%',
                 
@@ -244,13 +217,9 @@ class Completion extends React.Component {
   }
 
   filterList(text) {
-    //   console.log(text)
-    // const copy = state.source;
-    // console.log(this.state)
 
     const copy = this.state.listSource;
     const newState = copy.filter(item => {
-        // console.log(text)
         return item.name.indexOf(text) > -1;
     });
 
@@ -261,7 +230,6 @@ class Completion extends React.Component {
 
   searchFilterFunction = text => {
     this.setState({searchInput: text})
-    // console.log(text)
     this.filterList(text)
 
     // const newData = this.arrayholder.filter(item => {      
@@ -314,7 +282,8 @@ const completionStyles = StyleSheet.create({
     },
     container: {
       flex: 1,
-      position: 'relative'
+      position: 'relative',
+      backgroundColor: colors.oldLace
     },  
     flatview: {
       alignItems: 'center',

@@ -10,7 +10,7 @@ const requestDataSuccess = (data) => ({ type: 'REQUEST_DATA_SUCCESS', data, load
 const requestDataError = (error) => ({ type: 'REQUEST_DATA_ERROR', data: [], loading: false, error });
 
 export const fetchData = () => dispatch => {
-    // console.log('REQUEST_INITIAL')
+    console.log('REQUEST_INITIAL')
     dispatch(requestData());
 
     return AsyncStorage.getItem('AUTH_TOKEN').then(token => { 
@@ -69,7 +69,7 @@ export const fetchData = () => dispatch => {
                 //     })
                 // })
                 
-                console.log(newCommunes);
+                console.log(newCommunes)
 
                 // const json = {
                 //     type: "FeatureCollection",
