@@ -10,6 +10,7 @@ import Profile from './Profile';
 
 const styles = {
     tab: {
+        // marginHorizontal: 20,
         paddingTop: 0,
         paddingBottom: 0,
         borderTopWidth: 0,
@@ -42,7 +43,7 @@ style={styles.icon}
 /></View>;
 
 const mapIdleState = <View style={{
-    borderColor: colors.white, 
+    borderColor: colors.oldLace, 
     justifyContent:'center', 
     alignItems:'center', 
     width:'100%', 
@@ -66,7 +67,7 @@ style={styles.icon}
 /></View>;
 
 const successIdleState = <View style={{
-    borderColor: colors.white, 
+    borderColor: colors.oldLace, 
     justifyContent:'center', 
     alignItems:'center', 
     width:'100%', 
@@ -85,19 +86,19 @@ const statsActiveState = <View style={{
     height:'100%', 
     borderTopWidth: 3,
 }}><Image
-source={require('../img/icon-stats-active.png')}
+source={require('../img/icon-progress-active.png')}
 style={styles.icon}
 /></View>;
 
 const statsIdleState = <View style={{
-    borderColor: colors.white, 
+    borderColor: colors.oldLace, 
     justifyContent:'center', 
     alignItems:'center', 
     width:'100%', 
     height:'100%', 
     borderTopWidth: 3,
 }}><Image
-source={require('../img/icon-stats.png')}
+source={require('../img/icon-progress.png')}
 style={styles.icon}
 /></View> 
 
@@ -114,7 +115,7 @@ style={styles.icon}
 /></View>;
 
 const profileIdleState = <View style={{
-    borderColor: colors.white, 
+    borderColor: colors.oldLace, 
     justifyContent:'center', 
     alignItems:'center', 
     width:'100%', 

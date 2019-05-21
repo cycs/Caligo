@@ -43,6 +43,7 @@ class Login extends Component {
                 source={require('../../img/maplogin.png')}
                 style={styles.maplogin}
             />
+            <View style={{backgroundColor: colors.oldLace, width:'100%', position:'absolute', bottom:0, height:20}}></View>
             <Cloud style={styles.cloudSecond} width='100%' height={400} fill={colors.parchment}/>
             <Cloud style={styles.cloud} width='130%' height={400} fill={colors.oldLace}/>
             {/* <View style={styles.logoContainer}> */}
@@ -103,7 +104,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.oldLace,
-        position: 'relative'
+        position: 'relative',
+    // marginHorizontal: 20,
+
     },
     subcontainer: {
         position: 'relative',

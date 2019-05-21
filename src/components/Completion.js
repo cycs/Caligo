@@ -184,7 +184,7 @@ class Completion extends React.Component {
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.8,
                 shadowRadius: 2,
-                elevation: 2,
+                // elevation: 2,
                 paddingBottom: 0,
                 paddingTop: 0,
                 paddingLeft: 0,
@@ -196,7 +196,7 @@ class Completion extends React.Component {
         }        
         inputContainerStyle={
             { 
-                backgroundColor: colors.white,
+                backgroundColor: colors.oldLaceDark,
                 borderRadius: 50,
                 height: 42,
                 alignItems: 'center',
@@ -283,23 +283,18 @@ const completionStyles = StyleSheet.create({
     container: {
       flex: 1,
       position: 'relative',
-      backgroundColor: colors.oldLace
+      backgroundColor: colors.oldLace,
     },  
     flatview: {
       alignItems: 'center',
       justifyContent: 'center',
       paddingVertical: 10,
       borderRadius: 2,
-    //   borderBottomWidth: 1,
-    //   borderBottomColor: 'rgba(0, 0, 0, 0.4)',
       display: 'flex',
       width: '80%',
       marginLeft: 'auto',
       marginRight: 'auto',
-    //   paddingRight: 20,
-    //   paddingLeft: 20,
       flexDirection: 'row',
-    //   fontFamily: 'Mukta-Regular'
     },
     infos: {
       flex: 2,

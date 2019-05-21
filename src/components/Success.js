@@ -89,6 +89,7 @@ static navigationOptions = ({ navigation }) => {
                 keyExtractor={(item, i) => item.id || i.toString()}
             />
             <Modal 
+                style={{elevation: 3}}
                 isVisible={this.state.isVisible} 
                 coverScreen={false}
                 onBackButtonPress={() => this.setState({isVisible: false})}
@@ -203,7 +204,7 @@ static navigationOptions = ({ navigation }) => {
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.8,
                 shadowRadius: 2,
-                elevation: 2,
+                // elevation: 2,
                 paddingBottom: 0,
                 paddingTop: 0,
                 paddingLeft: 0,
@@ -214,7 +215,7 @@ static navigationOptions = ({ navigation }) => {
         }        
         inputContainerStyle={
             { 
-                backgroundColor: colors.white,
+                backgroundColor: colors.oldLaceDark,
                 borderRadius: 50,
                 height: 42,
                 alignItems: 'center',
@@ -245,9 +246,15 @@ static navigationOptions = ({ navigation }) => {
         const isUnlocked = unlockedItems.includes(lowerText)
         const isLocked = lockedItems.includes(lowerText)
         const name = item.name.toLowerCase()
-        return name.indexOf(lowerText) > -1 || item.isUnlocked === isUnlocked || item.isLocked === !isLocked;
-    });
 
+        // if(item.isUnlocked === isUnlocked){
+        //     return true
+        // }
+
+        return name.indexOf(lowerText) > -1;
+    })
+
+    console.log(newState)
     this.setState({
         listfiltered: newState
     })
@@ -266,7 +273,8 @@ static navigationOptions = ({ navigation }) => {
 
 const completionStyles = StyleSheet.create({
     modal: {
-        backgroundColor: 'white',
+        backgroundColor: colors.oldLace,
+        elevation: 3,
         padding: 22,
         justifyContent: 'center',
         alignItems: 'center',
@@ -311,10 +319,9 @@ const completionStyles = StyleSheet.create({
         position: 'absolute',
     },
     container: {
-      flex: 1,
-      position: 'relative',
-    backgroundColor: colors.oldLace
-
+        flex: 1,
+        position: 'relative',
+        backgroundColor: colors.oldLace,
     },  
     infos: {
         width: '80%', 

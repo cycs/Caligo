@@ -36,9 +36,9 @@ class LoginUser extends Component {
   --------------------------------------------------------- */
     loginUser = async ({ email, password }) => {
         try {
-            if(email == '' && password == '') throw new Error('Champs vides')
-            if(email == '') throw new Error('Email non-valide')
-            if(password == '') throw new Error('Mot de passe non-valide')
+                if(email == '' && password == '') throw new Error('Champs vides')
+                if(email == '') throw new Error('Email non-valide')
+                if(password == '') throw new Error('Mot de passe non-valide')
             
             const signin = await this.props.signinUser({
                 variables: { email, password }

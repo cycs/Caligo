@@ -9,18 +9,18 @@ export default class SuccessItem extends PureComponent {
   render() {
     //   console.log(this.props)
     const percent = Math.floor(this.props.item.percentage);
-    let uri = require(`../img/success/success-namur-step_0.png`)
+    let uri = require(`../img/success/success_namur_00.png`)
 
     if(percent >= 100) {
-        uri = require(`../img/success/success-namur-step_5.png`)
+        uri = require(`../img/success/success_namur_05.png`)
     } else if(percent >=50) {
-        uri = require(`../img/success/success-namur-step_4.png`)
+        uri = require(`../img/success/success_namur_04.png`)
     } else if(percent >=25) {
-        uri = require(`../img/success/success-namur-step_3.png`)
+        uri = require(`../img/success/success_namur_03.png`)
     } else if(percent >= 10){
-        uri = require(`../img/success/success-namur-step_2.png`)
+        uri = require(`../img/success/success_namur_02.png`)
     } else if(percent >= 1){
-        uri = require(`../img/success/success-namur-step_1.png`)
+        uri = require(`../img/success/success_namur_01.png`)
     }
 
     return (
@@ -28,7 +28,7 @@ export default class SuccessItem extends PureComponent {
             <View style={styles.flatview}>
                 {/* <Cloud style={styles.cloud} width={55.5} height={35} fill={colors.sanJuan}/> */}
                 <Image
-                    style={{width: 64, height: 50, marginBottom: 10}}
+                    style={{width: 64, height: 57, marginBottom: 10}}
                     source={uri}
                 />
                 <Text>{this.props.item.name}</Text>

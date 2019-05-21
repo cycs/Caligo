@@ -3,6 +3,7 @@ const colors = {
     
     white: '#FFFFFF',
     oldLace: '#FEFAF3',
+    oldLaceDark: 'rgb(245, 241, 234)',
     oldLace60: 'rgba(254, 250, 243, .6)',
     oldLace80: 'rgba(254, 250, 243, .8)',
     ecruWhite: 'rgb(243, 239, 223)',

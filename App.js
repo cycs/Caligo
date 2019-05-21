@@ -76,10 +76,7 @@ const NavWrapper = ({ user, loading }) => {
     }
 
     return (
-        <View>
-            <OfflineNotice />
-            <Container screenProps={{ user }}/>
-        </View> 
+        <Container screenProps={{ user }}/>
     )
 } 
 

@@ -49,8 +49,8 @@ class CreateUser extends Component {
         try {
             const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
             
-            if(!re.test(email) && password.length < 9) throw new Error('Email non-valide et mot de passe trop court')
-            if(password.length < 9) throw new Error('Mot de passe trop court (8 caractères minimum)')
+            if(!re.test(email) && password.length < 8) throw new Error('Email non-valide et mot de passe trop court')
+            if(password.length < 8) throw new Error('Mot de passe trop court (8 caractères minimum)')
             if(!re.test(email)) throw new Error('Email non-valide')
 
             const user = await this.props.createUser({ 

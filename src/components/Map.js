@@ -46,6 +46,7 @@ import pattern from '../img/pattern-marble.png'
 import Modal from "react-native-modal";
 
 import { markersUpdate, communesUpdate, communesCompletion, fetchData } from '../actions';
+import OfflineNotice from './utils/OfflineNotice'
 
 import Queries from './queries';
 
@@ -365,6 +366,7 @@ class Map extends Component {
                         {this.renderBonusRevealedModal()}
                     </View>
                 </Modal>
+                <OfflineNotice />
             </View>
         );
     }

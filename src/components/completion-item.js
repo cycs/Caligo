@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         justifyContent: 'flex-start',
         position: 'relative',
+        paddingBottom: 6
     },
     maintitle: {
         fontSize: 60,
@@ -92,6 +93,8 @@ const styles = StyleSheet.create({
     name: {
       fontFamily: 'Mukta-Bold',      
       fontSize: 24,
+      height: 'auto',
+      padding:0,
       color: colors.bronzetone,
     },
     arrowContainer: {
