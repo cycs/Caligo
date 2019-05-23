@@ -2,7 +2,8 @@ import { AsyncStorage } from 'react-native';
 import { request } from 'graphql-request';
 import { GraphQLClient } from 'graphql-request';
 import update from 'immutability-helper';
-import communesJSON from '../../communes-minify.json';
+// import communesJSON from '../../communes-minify.json';
+import communesJSON from '../../Communes-belgique.json';
 
 
 const requestData = () => ({ type: 'REQUEST_DATA', loading: true, error: null });

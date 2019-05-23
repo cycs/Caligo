@@ -6,7 +6,6 @@ import reducers from '../reducers'
 import { composeWithDevTools } from 'remote-redux-devtools';
 import storage from 'redux-persist/lib/storage'
 import { persistReducer, persistStore } from 'redux-persist'
-// import communesJSON from '../../Communes-belgique.json';
 
 // const initialState = communesJSON;
 

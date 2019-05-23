@@ -16,6 +16,7 @@ import Login from './src/components/user/Login';
 import { signOut } from './src/components/utils/loginUtils'
 import { View } from 'native-base';
 import OfflineNotice from './src/components/utils/OfflineNotice'
+import colors from './src/components/utils/colors.js';
 
 // if (process.env.NODE_ENV !== 'production') {
 //     const {whyDidYouUpdate} = require('why-did-you-update')
@@ -59,7 +60,7 @@ const AppStackNavigator = createStackNavigator({
         screen: withApollo(App),
     }
 
-}); 
+}, {cardStyle: { backgroundColor: colors.oldLace }}); 
 
 const Container = createAppContainer(AppStackNavigator)
 

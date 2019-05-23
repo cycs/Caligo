@@ -12,8 +12,8 @@ import {Platform, StyleSheet, Text, View, Button, Image, PermissionsAndroid, Asy
 import Mapbox from '@mapbox/react-native-mapbox-gl';
 // import {name as appName} from './app.json';
 // import communesJSON from './communes-belges.json';
-// import communesJSON from '../../Communes-belgique.json';
-import communesJSON from '../../communes-minify.json';
+import communesJSON from '../../Communes-belgique.json';
+// import communesJSON from '../../communes-minify.json';
 import markersJSON from '../../markers.json';
 import { request } from 'graphql-request'
 import { store } from '../components/Store';
@@ -624,7 +624,7 @@ class Map extends Component {
 
 
             const center = position;
-            const radius = activeBonus ? 0.09 : 0.045;
+            const radius = activeBonus ? 0.1 : 0.05;
             const options = {steps: 64, units: 'kilometers'};
 
 
@@ -641,9 +641,12 @@ class Map extends Component {
 
                     if (commune.geometry.coordinates.length === 2) { // if 2 arrays, then the first is a mask
                         coords = commune.geometry.coordinates[1];
-
+                        // console.log(commune);
                         const actualMask = polygon([commune.geometry.coordinates[0]]);
+                        // console.log(commune);
+
                         const intersection = intersect(actualMask, newCircle);
+                        // console.log(commune);
 
                         newCircle = intersection ? this.unionPolygons(actualMask, newCircle) : this.unionMultiPolygons(actualMask, newCircle);
                     }

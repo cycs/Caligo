@@ -120,8 +120,8 @@ static navigationOptions = ({ navigation }) => {
             // console.log(data)
             return (
                 <View style={completionStyles.modal}>
-                    <Text style={completionStyles.modalContent}>{data.name}</Text>
-                    <Text style={completionStyles.modalContent}>{`${data.percentage.toFixed(1)}% exploré`}</Text>
+                    <Text style={completionStyles.modalContentTitle}>{data.name}</Text>
+                    <Text style={completionStyles.modalContentInfo}>{`${data.percentage.toFixed(1)}% exploré`}</Text>
                 </View>
             );
         }
@@ -281,9 +281,17 @@ const completionStyles = StyleSheet.create({
         borderRadius: 4,
         borderColor: 'rgba(0, 0, 0, 0.1)',
       },
-      modalContent: {
-        fontSize: 20,
+      modalContentTitle: {
+        color: colors.bronzetone,
+        fontFamily:'Mukta-Bold',
+        fontSize: 24,
         marginBottom: 12,
+      },
+      modalContentInfo: {
+        color: colors.bronzetone60,
+        fontFamily:'Mukta-Regular',
+        fontSize: 16,
+        // marginBottom: 12,
       },
     titleContainer: {
         width: '80%',

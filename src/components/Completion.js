@@ -342,7 +342,7 @@ const CompletionStackNavigator = createStackNavigator({
         screen: Detail
     }
 
-}); 
+}, {cardStyle: { backgroundColor: colors.oldLace }}); 
 
 const Container = createAppContainer(CompletionStackNavigator)
 

@@ -1,5 +1,3 @@
-// import communesJSON from '../../Communes-belgique.json';
-import communesJSON from '../../communes-minify.json';
 import update from 'immutability-helper';
 import { request } from 'graphql-request'
 
