@@ -10,7 +10,9 @@ import { filterList } from '../actions';
 import colors from './utils/colors'
 import { createStackNavigator, createAppContainer } from 'react-navigation';
 import Detail from './Detail'
+import Filter from './Filter'
 import CompletionItem from './completion-item'
+import Modal from "react-native-modal";
 
 import { store } from '../components/Store';
 
@@ -35,9 +37,11 @@ class Completion extends React.Component {
 
     
     this.state = {
+        filter: 'alpha',
         searchInput: '',
         listSource: [],
-        listfiltered: []
+        listfiltered: [],
+        isModalVisible: false,
     }
 
     this.listholder = this.props.list
@@ -74,7 +78,7 @@ class Completion extends React.Component {
   }
 
   render() {
-    //   console.log(Map)
+      console.log('render')
     //   console.log('THIS PROPS COMPLETION', this.list)
       const {height, width} = Dimensions.get('window');
       const ratio = width / 3.333;
@@ -83,13 +87,24 @@ class Completion extends React.Component {
     return (
       <View style={completionStyles.container}>
             <Header text='Progression'/>
-            <View style={{alignItems: 'center'}}>
+            <View style={{
+                // backgroundColor: 'green',
+                width: '80%',
+                marginRight: 'auto', 
+                marginLeft: 'auto', 
+                flexDirection: 'row', 
+                alignItems: 'center', 
+                justifyContent: 'space-between',
+                marginBottom: 24
+                }}
+            >
                 {this.searchList()}
+                <Filter onPress={() => this.setState({ isModalVisible: true })}/>
             </View>
             <FlatList
                 // ItemSeparatorComponent={this.renderSeparator}
                 // extraData={this.state}
-                data={this.sortList(this.state.listfiltered)}
+                data={this.sortList(this.state.listfiltered, this.state.filter)}
                 renderItem={({item}) => {
                     // const percent = `${item.percentage.toFixed(2)}%`;
                     // const percent = `${item.percentage}%`;
@@ -98,14 +113,48 @@ class Completion extends React.Component {
                     <CompletionItem item={item} goto={() => navigate('Detail', { item })}/>
                     )
                 }}
+                extraData={this.state.filter}
                 keyExtractor={(item, i) => item.id || i.toString()}
             />
+            <Modal 
+                style={{elevation: 3}}
+                isVisible={this.state.isModalVisible} 
+                // coverScreen={false}
+                onBackButtonPress={() => this.setState({isModalVisible: false})}
+                onBackdropPress={() => this.setState({isModalVisible: false})}
+                >
+                <View style={{ flex: 1}}>
+                    {this.renderModal()}
+                </View>
+            </Modal>
       </View>
     );
   }
 
   /* Methods
   --------------------------------------------------------- */
+    renderModal = () => {
+        return (
+            <View style={completionStyles.modal}>
+                <Text style={completionStyles.modalTitle}>Trier par</Text>
+                <View style={completionStyles.modalContentContainer}>
+                <TouchableOpacity onPress={() => {
+                    this.setState({ isModalVisible: false, filter: 'alpha' })
+                    // this.sortList(this.state.listfiltered, this.state.filter)
+                    }}>
+                    <Text style={completionStyles.modalContent}>A-Z</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => {
+                    this.setState({ isModalVisible: false, filter: 'exploration' })
+                    // this.sortList(this.state.listfiltered, this.state.filter)
+                    }}>
+                    <Text style={completionStyles.modalContent}>Exploration</Text>
+                </TouchableOpacity>
+                </View>
+            </View>
+        );
+    }
+
   getList() {
     //   console.log('TIS PROPS GET LIST', store.getState())
     const list = store.getState().communes.communes.features.map((commune, i) => {
@@ -154,16 +203,32 @@ class Completion extends React.Component {
   }
 }
 
-  sortList(list) {
-    //   console.log(list)
+  sortList(list, method = 'alpha') {
+      console.log(method)
     if(list.length == 0) return false;
 
-    const newList = list.sort((a, b) => {
-        if (a.name < b.name) return -1;
-        if ( a.name > b.name) return 1;
-        
-        return 0;
-    });
+    let newList = []
+
+    if(method == 'alpha') {
+        newList = list.sort((a, b) => {
+            if (a.name < b.name) return -1;
+            if (a.name > b.name) return 1;
+            
+            return 0;
+        });
+    } else if (method == 'exploration') {
+        newList = list.sort((a, b) => {
+            if (a.explored < b.explored) return 1;
+            if (a.explored > b.explored) return -1;
+
+            if (a.explored == b.explored) {
+                if (a.name < b.name) return -1;
+                if (a.name > b.name) return 1;
+            }
+            
+            return 0;
+        });
+    }
 
     return newList;
   }
@@ -189,8 +254,9 @@ class Completion extends React.Component {
                 paddingTop: 0,
                 paddingLeft: 0,
                 paddingRight: 0,
-                bottom: 24,
+                // bottom: 24,
                 width: '80%',
+                // flex: 1
                 
             }
         }        
@@ -325,7 +391,30 @@ const completionStyles = StyleSheet.create({
     title: {
         fontSize: 30,
         textAlign: 'center'
-    }
+    },
+    modal: {
+        backgroundColor: colors.oldLace,
+        elevation: 3,
+        padding: 22,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 4,
+        borderColor: 'rgba(0, 0, 0, 0.1)',
+      },
+      modalTitle: {
+        fontFamily: 'Mukta-Bold',
+        color: colors.bronzetone,
+        fontSize: 24
+      },
+      modalContentContainer: {
+        marginTop: 24,
+        alignItems : 'center'
+      },
+      modalContent: {
+        color: colors.bronzetone,
+        paddingTop: 12,
+        paddingBottom: 12,
+      }
   });
 
 const mapStateToProps = state => {

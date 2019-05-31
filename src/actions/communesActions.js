@@ -124,11 +124,12 @@ const updateQL = (state, stateId) => {
     })
 }
 
-export const communesUpdate = (mask, i, id) => {
-    // console.log('COMMUNESUPDATE', {mask, i, id})
+export const communesUpdate = (mask, i, id, mustUpdate = true) => {
+    console.log('COMMUNESUPDATE', {mask, i, id, mustUpdate})
 
     const maskString = JSON.stringify(mask);
-    updateQL(maskString, id);
+
+    if (mustUpdate) {updateQL(maskString, id)};
 
     return {
         type: 'COMMUNESUPDATE',
