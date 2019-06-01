@@ -15,6 +15,7 @@ import { store } from '../components/Store';
 import Header from './Header'
 
 import SearchIcon from '../img/search-icon.svg';
+import communesSVG from '../communes-svg.json'
 
 export default class Success extends Component {
     
@@ -83,7 +84,7 @@ static navigationOptions = ({ navigation }) => {
                 numColumns={numColumns}
                 renderItem={({item}) => {
                 return (
-                    <SuccessItem item={item} openModal={() => {this.toggleModal(item)}}/>
+                    <SuccessItem svg={communesSVG[item.SHN] || communesSVG['BE392094']} item={item} openModal={() => {this.toggleModal(item)}}/>
                     )
                 }}
                 keyExtractor={(item, i) => item.id || i.toString()}
