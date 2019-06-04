@@ -61,25 +61,9 @@ class Completion extends React.Component {
           listSource: this.getList(),
           listfiltered: this.getList(),
         })
-    //   console.log('COMPONENT DID MOUNT COMPLETION')
-  }
-
-//   shouldComponentUpdate(nextProps, nextState) {
-//     console.log(nextProps, nextState)
-//     console.log(this.props, this.state)
-//   }
-
-  componentDidUpdate(prevProps, prevState) {
-    // console.log("componentDidUpdate COMPLETION")
-    // console.log('prevProps', prevProps);
-    // console.log('props', this.state.list);
-
-    // this.listholder = this.props.list; // Keeps the list updated
   }
 
   render() {
-      console.log('render')
-    //   console.log('THIS PROPS COMPLETION', this.list)
       const {height, width} = Dimensions.get('window');
       const ratio = width / 3.333;
       const { navigate } = this.props.navigation;
@@ -146,9 +130,13 @@ class Completion extends React.Component {
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => {
                     this.setState({ isModalVisible: false, filter: 'exploration' })
-                    // this.sortList(this.state.listfiltered, this.state.filter)
                     }}>
-                    <Text style={completionStyles.modalContent}>Exploration</Text>
+                    <Text style={completionStyles.modalContent}>Exploration (m²)</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => {
+                    this.setState({ isModalVisible: false, filter: 'percentage' })
+                    }}>
+                    <Text style={completionStyles.modalContent}>Exploration (%)</Text>
                 </TouchableOpacity>
                 </View>
             </View>
@@ -204,7 +192,6 @@ class Completion extends React.Component {
 }
 
   sortList(list, method = 'alpha') {
-      console.log(method)
     if(list.length == 0) return false;
 
     let newList = []
@@ -218,10 +205,23 @@ class Completion extends React.Component {
         });
     } else if (method == 'exploration') {
         newList = list.sort((a, b) => {
+            console.log(a)
             if (a.explored < b.explored) return 1;
             if (a.explored > b.explored) return -1;
 
             if (a.explored == b.explored) {
+                if (a.name < b.name) return -1;
+                if (a.name > b.name) return 1;
+            }
+            
+            return 0;
+        });
+    } else if (method == 'percentage') {
+        newList = list.sort((a, b) => {
+            if (a.percentage < b.percentage) return 1;
+            if (a.percentage > b.percentage) return -1;
+
+            if (a.percentage == b.percentage) {
                 if (a.name < b.name) return -1;
                 if (a.name > b.name) return 1;
             }

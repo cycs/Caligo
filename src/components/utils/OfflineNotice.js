@@ -9,31 +9,45 @@ class OfflineNotice extends PureComponent {
     constructor(props){
         super(props)
 
+        _isMounted = false;
+
         this.state = {
             isConnected: true
         }
     }
 
+    /* Lifecycle Methods
+    --------------------------------------------------------- */
     componentDidMount() {
+        this._isMounted = true;
+
         NetInfo.fetch().then(state => {
             const { isConnected } = state
-             this.setState({ isConnected })
+
+            if(this._isMounted) {
+                this.setState({ isConnected })
+            }
           })
 
         NetInfo.addEventListener(state => {
             const { isConnected } = state
 
-            this.setState({ isConnected })
-
+            if(this._isMounted) {
+                this.setState({ isConnected })
+            }
         })
     }
 
     componentWillUnmount() {
-        NetInfo.removeEventListener(state => {
-            const { isConnected } = state
+        this._isMounted = false;
 
-            this.setState({ isConnected })
-        })
+        // NetInfo.removeEventListener(state => {
+        //     const { isConnected } = state
+
+        //     this.setState({ isConnected })
+        // })
+
+
     }
 
     render() {

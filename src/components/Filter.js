@@ -21,13 +21,10 @@ export default class Filter extends Component {
     /* Lifecycle Methods
     --------------------------------------------------------- */
     componentDidMount() {
-        console.log('filter didmount');
         this.setState({isModalVisible: false})
     }
     
     componentWillMount() {
-        console.log('filter willunmount');
-
         this.setState({isModalVisible: false})
     }
 

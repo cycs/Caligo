@@ -1,4 +1,4 @@
-import React, { PureComponent  } from 'react'
+import React, { Component  } from 'react'
 import { Image, Text, View, StyleSheet, TouchableOpacity, Dimensions } from 'react-native'
 import colors from './utils/colors'
 import Arrow from '../img/arrow-right.svg';
@@ -26,26 +26,9 @@ import Svg,{
     Mask,
 } from 'react-native-svg';
 
-export default class SuccessItem extends PureComponent {
-    constructor(props) {
-        super(props)
-
-        this.state = {
-            viewbox: '0 0 0 0',
-            path: ''
-        }
-    }
-
-    componentDidMount() {
-        const viewbox = this.props.svg.viewbox
-        const path = this.props.svg.d
-        this.setState({ viewbox, path })
-    }
-
-    componentWillReceiveProps() {
-        const viewbox = this.props.svg.viewbox
-        const path = this.props.svg.d
-        this.setState({ viewbox, path})
+export default class SuccessItem extends Component {
+    shouldComponentUpdate(prevProps, prevState) {
+        return this.props.item.percentage !== prevProps.item.percentage
     }
 
   render() {
@@ -71,29 +54,16 @@ export default class SuccessItem extends PureComponent {
 
     return (
         <TouchableOpacity onPress={() => {this.props.openModal()}} style={styles.flatview} id={this.props.item.id}>
-            <View style={styles.flatview}>
-                {/* <Cloud style={styles.cloud} width={55.5} height={35} fill={colors.sanJuan}/> */}
-                {/* <Image
-                    style={{width: 64, height: 57, marginBottom: 10}}
-                    source={uri}
-                /> */}
                 <View style={{ width:60, height:60, position: 'relative' }}>
                     <Svg width="100%" height="100%" viewBox='0 0 60 60' style={{position:'absolute'}}>
                         <Circle cx="50%" cy="50%" r="50%" opacity='0.25' fill={percent > 0 ? colors.goldenTainoi : 'rgba(204, 204, 204, .6)'}/>
                     </Svg>
-                    <Svg width="90%" height="90%" viewBox={this.state.viewbox}>
-                        {/* <Defs>
-                            <Mask preserveAspectRatio="none" height='100%' width="100%" id="image-mask">
-                                <Path preserveAspectRatio="none" scale="1.2" y='-80%' height='100%' width="100%" fill="white" d="M121,216.47273V0S96,21.47273,76,17.47273s-16-9-34-10c-11.98152-.66564-29,5-33,7A26.48006,26.48006,0,0,0,0,21.6V216.47273Z"/>               
-                            </Mask>
-                        </Defs> */}
-                        <Path d={this.state.path} fill={fillPath} stroke={percent > 0 ? colors.bronzetone : colors.bronzetone20} stroke-width="2"/>
-                        {/* <Path preserveAspectRatio="none" height='100%' width="100%" mask="url(#image-mask)" d={this.state.path} fill={colors.goldenTainoi} stroke='none'/> */}
+                    <Svg width="90%" height="90%" viewBox={this.props.svg.viewbox}>
+                        <Path d={this.props.svg.d} fill={fillPath} stroke={percent > 0 ? colors.bronzetone : colors.bronzetone20} stroke-width="2"/>
                     </Svg>
                 </View>
                 <Text>{this.props.item.name}</Text>
                 
-            </View >
         </TouchableOpacity>
     )
   }

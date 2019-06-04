@@ -94,7 +94,7 @@ export const fetchData = () => dispatch => {
                 dispatch(requestDataSuccess(newCommunes))
             })
             .catch(error => {
-                console.error(error);
+                // console.error(error);
                 dispatch(requestDataError(error))
             })
     });
@@ -120,12 +120,12 @@ const updateQL = (state, stateId) => {
         // console.log(data);
     })
     .catch(error => {
-        console.error(error);
+        // console.error(error);
     })
 }
 
 export const communesUpdate = (mask, i, id, mustUpdate = true) => {
-    console.log('COMMUNESUPDATE', {mask, i, id, mustUpdate})
+    // console.log('COMMUNESUPDATE', {mask, i, id, mustUpdate})
 
     const maskString = JSON.stringify(mask);
 

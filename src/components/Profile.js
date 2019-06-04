@@ -5,19 +5,38 @@ import { withApollo } from 'react-apollo'
 import { Button } from 'react-native-elements'
 import colors from '../components/utils/colors'
 import Header from './Header'
+import { store } from '../components/Store';
+import { polygon } from '@turf/helpers';
+import area from '@turf/area';
 
 class Profile extends Component {    
     constructor(props) {
         super(props)
         this.state = {
             nickname: null,
-            email: null
+            email: null,
+            totalExplored: 0
         }
     }
     
     /* Lifecycle methods
     --------------------------------------------------------- */
     componentDidMount() {
+        this.totalArea = store.getState().communes.communes.features.reduce((acc, val) => {
+            const values = this.getArea(val)
+            return acc + values
+        }, 0)
+
+        const totalExplored = store.getState().communes.communes.features
+            .filter((commune) => commune.id)
+            .reduce((acc, val) => {
+                const values = this.getAreaExplored(val)
+
+                return acc + values
+            }, 0)
+
+        this.setState({ totalExplored })
+
         this.props.navigation.setParams({
             client: this.props.client
         })
@@ -34,8 +53,6 @@ class Profile extends Component {
     }
 
   render() {
-    //   console.log(this.props.navigation)
-    //   console.log(this.props, this.state)
     return (
       <View style={styles.container}>
         <Header text='Profil'/>
@@ -43,6 +60,15 @@ class Profile extends Component {
             <View style={styles.infos}>
                 {this.state.nickname && <Text style={styles.name}>{this.state.nickname}</Text>}
                 {this.state.email && <Text style={styles.email}>{this.state.email}</Text>}
+            </View>
+            <View style={styles.infos}>
+                {<Text style={styles.name}>Total exploré</Text>}
+                {/* {<Text style={styles.email}>{this.state.totalExplored}</Text>} */}
+                {<Text style={styles.email}>{`${(this.state.totalExplored / 1000000).toFixed(4)} / ${Math.round(this.totalArea / 1000000)} km²`}</Text>}
+            </View>
+            <View style={styles.infos}>
+                {<Text style={styles.name}>Pourcentage total</Text>}
+                {<Text style={styles.email}>{`${(this.state.totalExplored / this.totalArea * 100).toFixed(5)}%`}</Text>}
             </View>
             <Button
                 onPress={() => {
@@ -71,6 +97,53 @@ class Profile extends Component {
       </View>
     )
   }
+
+  /* Methods
+  --------------------------------------------------------- */
+   getArea(feature) {
+        if (
+            feature.properties.SHN == "BE421009" ||
+            feature.properties.SHN == "BE213002" ||
+            feature.properties.SHN == "BE233016"
+            )  { 
+                return parseFloat(feature.properties.Shape_Area) * 10000000000
+            }
+
+        let newPolygon = feature.geometry.coordinates[0];
+        let _area = 0;
+        
+        if (feature.geometry.coordinates.length > 1) {
+            const polygonArea = polygon([feature.geometry.coordinates[1]]);
+            _area = area(polygonArea);
+        } else {
+            const polygonArea = polygon([feature.geometry.coordinates[0]]);
+            _area = area(polygonArea);
+        }
+
+        return _area
+
+    }
+
+    getAreaExplored(feature) {
+        if (
+            feature.properties.SHN == "BE421009" ||
+            feature.properties.SHN == "BE213002" ||
+            feature.properties.SHN == "BE233016"
+            )  { return 0 }
+
+        let newPolygon = feature.geometry.coordinates[0];
+        let explored = 0;
+        
+        if (feature.geometry.coordinates.length > 1) {
+            newPolygon = feature.geometry.coordinates[1]
+            
+            const  polygonExplored = polygon([feature.geometry.coordinates[0]]);
+            explored = area(polygonExplored);
+        }
+
+        return explored
+
+    }
 }
 
 const styles = {

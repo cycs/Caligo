@@ -10,7 +10,7 @@ export const getToken = async () => {
 }
 
 export const signIn = newToken => {
-    console.log(newToken)
+    // console.log(newToken)
     return AsyncStorage.setItem('AUTH_TOKEN', newToken);
 }
 

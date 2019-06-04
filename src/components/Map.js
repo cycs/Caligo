@@ -50,9 +50,7 @@ import { markersUpdate, communesUpdate, communesCompletion, fetchData } from '..
 import OfflineNotice from './utils/OfflineNotice'
 
 import Queries from './queries';
-
-
-// console.log('ACTIONS', { communesUpdate, communesCompletion })
+import Municipalities from './Municipalities'
 
 
 Mapbox.setAccessToken('sk.eyJ1IjoiY3ljcyIsImEiOiJjanY1YnJueXcxMTdvM3lvNzlwMnN4NWpwIn0.VWoC5NPRh6Kz2vCHrrvVjA')
@@ -60,9 +58,6 @@ Mapbox.setAccessToken('sk.eyJ1IjoiY3ljcyIsImEiOiJjanY1YnJueXcxMTdvM3lvNzlwMnN4NW
 class Map extends Component {
     constructor(props) {
         super(props);
-        // console.log(props)
-
-
 
         /* State
         --------------------------------------------------------- */
@@ -78,6 +73,7 @@ class Map extends Component {
           active: true,
           communes: communesJSON,
           centerCoordinate: {
+              position: [5.3954002323, 50.7111308907],
               namur: [4.856387665236815, 50.465550770154636],
               crisnee: [5.3954002323, 50.7111308907],
             },
@@ -86,7 +82,7 @@ class Map extends Component {
             longitude: 4.856387665236815,
             latitudeDelta: 1,
             longitudeDelta: 1,
-            zoom: 12
+            zoom: 13
           },
           shape: {
             geometry: {
@@ -180,41 +176,41 @@ class Map extends Component {
             PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
             {
               'title': 'Caligo',
-              'message': 'Caligo access to your location '
+              'message': "Caligo a besoin d'un accès GPS"
             }
           )
           if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            // console.log("You can use the location")
             
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                 this.setState({ 
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
-                    timestamp:  position.timestamp
+                    timestamp:  position.timestamp,
+                    centerCoordinate: { position: [position.coords.latitude, position.coords.longitude] }
                 })
                 },
-                (error) => { console.log(error) },
+                (error) => {  },
                 { enableHighAccuracy: true, timeout: 20000, maximumAge: 2000 }
             )
 
             this.watchPosition = navigator.geolocation.watchPosition(
                 (lastPosition) => {
                     // console.log(lastPosition);
-                    this.setState({lastPosition})
+                    this.setState({lastPosition, centerCoordinate: { position: lastPosition }})
 
                     const activeBonus = this.getActiveBonus().then(res => {
                         this.drawCircle(res)
                     })
                 },
-                (error) => { console.log(error) },
+                (error) => { },
                 {enableHighAccuracy: true, timeout: 20000, maximumAge: 2000, distanceFilter: 10}
             );
           } else {
             // console.log("location permission denied")
           }
         } catch (err) {
-          console.warn(err)
+        //   console.warn(err)
         }
       }
 
@@ -222,9 +218,6 @@ class Map extends Component {
     --------------------------------------------------------- */
 
     async componentDidMount() {
-        // console.log("DID MOUNT");  
-        // console.log(this);  
-        // this.generateMarkers()
         this.props.fetchData()
         await this.requestLocationPermission()
         
@@ -236,12 +229,8 @@ class Map extends Component {
         }
       }
 
-    componentDidUpdate(prevProps, prevState) {
-        // console.log("componentDidUpdate")
-    }
-
     componentWillUnmount() {
-        console.log("will unmount")
+        // console.log("will unmount")
         const {newMask, i, id} = this.state.maskWU
         this.props.communesUpdate(newMask, i, id, true)
         this.props.communesCompletion(newMask, i)
@@ -254,24 +243,15 @@ class Map extends Component {
                 <Loading />
             )
         }
-        // console.log('HAS LOADED');
-        // console.log(this.props, store.getState());
-
-        const communesShape = this.props.communes.features.map((commune, i) => {
-            return (
-                <View key={commune.properties.SHN}>
-                    <Mapbox.ShapeSource key={commune.properties.SHN} id={commune.properties.SHN} shape={commune.geometry} tolerance={this.shapeSourceParams.tolerance}>
-                        <Mapbox.FillLayer id={commune.properties.SHN} style={{ fillColor: colors.oldLace, fillOutlineColor: colors.bronzetone }} />
-                        {/* <Mapbox.FillLayer  id={commune.properties.SHN} style={{ fillPattern: require('../img/pattern512.png') }} /> */}
-                    </Mapbox.ShapeSource>            
-                </View>)
-        })
-
-    const newPoint1 = point([4.4578500000000005, 50.758892]);
-    const newPoint2 = point([3.807111, 50.8641955]);
-    const newPoint3 = point([4.4151775, 51.095394]);
-    const newPoint4 = point([3.2041190000000004, 50.985628]);
-    const newPoint5 = point([4.3073815, 50.796278]);
+        // const communesShape = this.props.communes.features.map((commune, i) => {
+        //     return (
+        //         <View key={commune.properties.SHN}>
+        //             <Mapbox.ShapeSource key={commune.properties.SHN} id={commune.properties.SHN} shape={commune.geometry} tolerance={this.shapeSourceParams.tolerance}>
+        //                 <Mapbox.FillLayer id={commune.properties.SHN} style={{ fillColor: colors.oldLace, fillOutlineColor: colors.bronzetone }} />
+        //                 {/* <Mapbox.FillLayer  id={commune.properties.SHN} style={{ fillPattern: require('../img/pattern512.png') }} /> */}
+        //             </Mapbox.ShapeSource>            
+        //         </View>)
+        // })
 
     const listPoints = [];        
 
@@ -284,7 +264,7 @@ class Map extends Component {
                     ref={(c)=> this._map = c}
                     styleURL={'mapbox://styles/cycs/cjv5es9ui1tv91ftgut7t84bk'} 
                     attributionEnabled={false}
-                    zoomLevel={12} 
+                    zoomLevel={13} 
                     centerCoordinate={this.state.centerCoordinate.namur} 
                     style={styles.container}
                     logoEnabled={false}
@@ -297,7 +277,8 @@ class Map extends Component {
                     onPress={this.onPressMarker}
 
                 >
-                    {communesShape}
+                    <Municipalities municipalities={this.props.communes.features}/>
+                    {/* {communesShape} */}
                     <Mapbox.ShapeSource
                         id={`pointOfInterests`}
                         shape={{
@@ -366,7 +347,6 @@ class Map extends Component {
     /* Methods
     --------------------------------------------------------- */
     generateMarkers = (props = this.props) => {
-        // console.log('generateMarkers')
         if (props.loading) return false;
 
         let PoI = null;
@@ -416,8 +396,8 @@ class Map extends Component {
 
             return (
                 <View style={styles.modal}>
-                    <Text style={styles.modalContent}>{data.NAMN}</Text>
-                    <Text style={styles.modalContent}>{data.bonus.name}</Text>
+                    <Text style={styles.modalContentTitle}>{data.NAMN}</Text>
+                    <Text style={styles.modalContentInfo}>{data.bonus.name}</Text>
                 </View>
             );
         }
@@ -459,7 +439,6 @@ class Map extends Component {
 
                 if (isInCircle) {
                     this.toggleModalPoI(marker.properties)
-                    // console.log(marker)
                     this.storeBonus(marker.properties.bonus.id)
                 }
 
@@ -501,12 +480,10 @@ class Map extends Component {
         const value = { expiration, mutiplier }
         const data = JSON.stringify(value)
 
-        // console.log(value, data)
-
         try {
             await AsyncStorage.setItem('activeBonus', data);
         } catch (error) {
-            console.log(error)
+            // console.log(error)
         }
     }
     
@@ -514,7 +491,7 @@ class Map extends Component {
         try {
           return AsyncStorage.getItem('activeBonus');
         } catch (error) {
-          console.log(error)
+        //   console.log(error)
         }
 
         return false
@@ -522,43 +499,34 @@ class Map extends Component {
 
     drawCircle(activeBonus) {        
         if (this.props.loading) return false; // prevents drawing before list of municipalities has been loaded
-        
         // try {
             // console.log(AsyncStorage.getItem('USER').then(data => console.log(data)))
-            // console.log(this.props)
             const position = [this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude]
 
             const center = [ ...position ]
             const radius = activeBonus ? 0.1 : 0.05
-            console.log(activeBonus, radius)
+            // console.log(activeBonus, radius)
             const options = {steps: 64, units: 'kilometers'}
 
             let newCircle = circle(center, radius, options)
             const circlePoI = Object.assign({}, newCircle)
-            // console.log(newCircle, circlePoI)
 
-            // console.log(this.props.communes.features[0]);
             this.props.communes.features.map((commune, i) => {
                 const isInPolygon = this.isPositionInPolygon(newCircle, commune)
                 this.isGeometryCollection(commune);
 
                 if (isInPolygon) {
-                // console.log(isInPolygon, commune)
 
                     let coords = commune.geometry.coordinates[0]
                     let oldAreaUphold = 0;
 
                     if (commune.geometry.coordinates.length === 2) { // if 2 arrays, then the first is a mask
                         coords = commune.geometry.coordinates[1];
-                        // console.log(commune);
                         const actualMask = polygon([commune.geometry.coordinates[0]]);
-                        // console.log(commune);
 
                         oldAreaUphold = area(actualMask)
 
-
                         const intersection = intersect(actualMask, newCircle);
-                        // console.log(commune);
 
                         newCircle = intersection ? this.unionPolygons(actualMask, newCircle) : this.unionMultiPolygons(actualMask, newCircle);
                     }
@@ -572,27 +540,17 @@ class Map extends Component {
                     newMask.properties.SHN = commune.properties.SHN
                     newMask.properties.NAMN = commune.properties.NAMN
 
-                    console.log(commune, commune.id);
-
                     if (commune.id) {
-                    // console.log(this.props.communes.features, commune, commune.id);
-                        // console.log(this.state.oldArea, this.state.oldArea[id], newArea)
-
                         newMask.id = commune.id;
                         
                         const id = commune.id;
                         const oldAreaUpdated = this.state.oldArea[id] ? this.state.oldArea[id] : oldAreaUphold 
-                        console.log(oldAreaUpdated, newArea);
 
                         const mustUpdate = newArea - oldAreaUpdated > 50000 // If area diff is < 30m³, then no mutation
                         if(mustUpdate || !this.state.oldArea[id]) {
-
                             const oldArea = Object.assign({}, this.state.oldArea)
                             oldArea[id] = newArea
-                            // console.log(oldArea);
                             this.setState({ oldArea })
-
-                            // console.log(object);
                         }
 
                         const maskWU = {newMask, i, id}
@@ -603,7 +561,6 @@ class Map extends Component {
                         this.isBonusRevealed(commune.properties.SHN, position, circlePoI)
                     } else {
                     // console.log(this.props.communes.features, commune, commune.id);
-
                         AsyncStorage.getItem('USER').then(userId => {
                             // console.log(userId)
                             const mutation = `
@@ -728,7 +685,6 @@ class Map extends Component {
 
     getList() {
         // console.log("GET LIST", this.props)
-        // console.log('map');
 
         const list = this.props.communes.features.map((commune) => {
         return this.getArea(commune);
@@ -770,7 +726,6 @@ class Map extends Component {
 
     async onPressPathMask() {
         // console.log('PATH TO MASK');
-        console.log('map');
 
         const communesShape = await this.state.communes.features.map((commune, i) => {
             if(commune.properties.NAMN == 'Crisnée'){
@@ -799,8 +754,6 @@ class Map extends Component {
     }
     
     async onPressMaskMap() {
-        // console.log('map');
-
         const communesShape = await communesJSON.features.map((commune, i) => {
             if(commune.properties.NAMN == 'Crisnée'){
                 var poly1 = polygon([commune.geometry.coordinates[0]]);
@@ -811,7 +764,6 @@ class Map extends Component {
                 newMask.properties.SHN = commune.properties.SHN
     
                 commune = newMask;
-                // console.log(this.state)
     
                 this.setState({
                     communes: update(this.state.communes, {
@@ -825,22 +777,17 @@ class Map extends Component {
     }
 
     onDidFinishRenderingMapFully() {
-        // console.log('onDidFinishRenderingMapFully', this);
     }
 
     onRegionIsChanging() {
-        // console.log('onRegionIsChanging', this);
     }
 
     onDidFinishRenderingFrameFully() {
-        // console.log('onDidFinishRenderingFrameFully', this);
     }
 
     onRegionDidChange(data) {
         
         if (!this._map) return false;
-        // console.log(this._map);
-        // console.log(data);
         const lon = data.geometry.coordinates[0]
         const lat = data.geometry.coordinates[1]
 
@@ -884,16 +831,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modal: {
-    backgroundColor: 'white',
+    backgroundColor: colors.oldLace,
+    elevation: 3,
     padding: 22,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 4,
     borderColor: 'rgba(0, 0, 0, 0.1)',
   },
-  modalContent: {
-    fontSize: 20,
+  modalContentTitle: {
+    color: colors.bronzetone,
+    fontFamily:'Mukta-Bold',
+    fontSize: 24,
     marginBottom: 12,
+  },
+  modalContentInfo: {
+    color: colors.bronzetone60,
+    fontFamily:'Mukta-Regular',
+    fontSize: 16,
   },
 });
 

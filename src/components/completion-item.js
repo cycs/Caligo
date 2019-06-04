@@ -6,7 +6,6 @@ import Arrow from '../img/arrow-right.svg';
 
 export default class CompletionItem extends PureComponent {
   render() {
-    //   console.log(this.props.item.name)
     const percent = `${this.props.item.percentage.toFixed(2)}%`;
     const newArea = `${Math.round(this.props.item.area / 1000000)} km²`
 

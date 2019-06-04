@@ -57,10 +57,6 @@ static navigationOptions = ({ navigation }) => {
         })
   }
 
-
-  componentDidUpdate(prevProps, prevState) {
-  }
-
   render() {
       const {height, width} = Dimensions.get('window');
       const ratio = width / 3.333;
@@ -80,6 +76,9 @@ static navigationOptions = ({ navigation }) => {
                 <Text style={completionStyles.score}>{unlockedSuccesses.length} / {this.state.listSource.length}</Text>
             </View>
             <FlatList
+                extraData={this.state.listfiltered}
+                removeClippedSubviews={true}
+                initialNumToRender={20}
                 data={this.sortList(this.state.listfiltered)}
                 numColumns={numColumns}
                 renderItem={({item}) => {
@@ -107,7 +106,6 @@ static navigationOptions = ({ navigation }) => {
   /* Methods
   --------------------------------------------------------- */
   toggleModal = (item) => {
-    //   console.log(item);
     this.setState({ 
         isVisible: !this.state.isVisible,
         successData: item
@@ -118,11 +116,10 @@ static navigationOptions = ({ navigation }) => {
   renderModal = () => {
         if (this.state.successData !== null) {
             const data = this.state.successData
-            // console.log(data)
             return (
                 <View style={completionStyles.modal}>
                     <Text style={completionStyles.modalContentTitle}>{data.name}</Text>
-                    <Text style={completionStyles.modalContentInfo}>{`${data.percentage.toFixed(1)}% exploré`}</Text>
+                    <Text style={completionStyles.modalContentInfo}>{`${data.percentage.toFixed(2)}% exploré`}</Text>
                 </View>
             );
         }
@@ -131,7 +128,6 @@ static navigationOptions = ({ navigation }) => {
     }
 
   getList() {
-    //   console.log('TIS PROPS GET LIST', store.getState())
     const list = store.getState().communes.communes.features.map((commune, i) => {
       return this.getArea(commune, i);
     });
@@ -240,25 +236,14 @@ static navigationOptions = ({ navigation }) => {
   filterList(text) {
     const lowerText = text.toLowerCase()
     const copy = this.state.listSource
-    const unlockedItems = ['déverouillé', 'débloqué', 'debloque', 'disponible', 'dispo']
-    const lockedItems = ['verrouillé', 'bloqué', 'bloque', 'indisponible', 'indispo']
 
     const newState = copy.filter(item => {
-        const isUnlocked = unlockedItems.includes(lowerText)
-        const isLocked = lockedItems.includes(lowerText)
         const name = item.name.toLowerCase()
-
-        // if(item.isUnlocked === isUnlocked){
-        //     return true
-        // }
 
         return name.indexOf(lowerText) > -1;
     })
 
-    console.log(newState)
-    this.setState({
-        listfiltered: newState
-    })
+    this.setState({ listfiltered: newState })
   }
 
   searchFilterFunction = text => {
@@ -292,7 +277,6 @@ const completionStyles = StyleSheet.create({
         color: colors.bronzetone60,
         fontFamily:'Mukta-Regular',
         fontSize: 16,
-        // marginBottom: 12,
       },
     titleContainer: {
         width: '80%',

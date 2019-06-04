@@ -47,8 +47,6 @@ export default class Detail extends Component {
     constructor(props) {
         super(props)
 
-        // console.log(props)
-        // console.log(this)
         this.state = {
             municipality : null,
             viewbox: '0 0 0 0',
@@ -60,8 +58,6 @@ export default class Detail extends Component {
     }
 
     componentDidMount() {
-        console.log(this.props);
-        console.log(communesSVG[this.props.navigation.state.params.item.SHN]);
 
         if(communesSVG[this.props.navigation.state.params.item.SHN]) {
             const commune = communesSVG[this.props.navigation.state.params.item.SHN]
@@ -109,7 +105,6 @@ export default class Detail extends Component {
                     )
                 })
         }
-        // console.log(filteredMarkers)
 
         return (
             <View style={styles.detailContainer}>

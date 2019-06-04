@@ -15,6 +15,8 @@ class CreateUser extends Component {
     constructor(props) {
         super(props)
 
+        _isMounted = false;
+
         this.state = {
             wrongUserData: {
                 message: null,
@@ -25,6 +27,14 @@ class CreateUser extends Component {
   
   /* Lfecycle methods
   --------------------------------------------------------- */
+    componentDidMount() {
+        this._isMounted = true;
+    }
+    
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
     render() { 
         return (
             <View>
@@ -43,7 +53,6 @@ class CreateUser extends Component {
 
         // Ligne à supprimer - Empeche de s'enregistrer
         // return false;
-
 
 
         try {
@@ -89,14 +98,16 @@ class CreateUser extends Component {
         } catch (e) {
             let message = e.message || 'Erreur'
 
-            this.setState({ 
-                wrongUserData: {
-                    hasError:true,
-                    message
-                } 
-            })
+            if (this._isMounted) {
+                this.setState({ 
+                    wrongUserData: {
+                        hasError:true,
+                        message
+                    } 
+                })
 
-            setTimeout(() => this.setState({wrongUserData: {hasError: false}}), 6000)
+                setTimeout(() => this.setState({wrongUserData: {hasError: false}}), 6000)
+            }
         }
     }
 }
