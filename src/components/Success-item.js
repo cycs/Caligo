@@ -28,7 +28,8 @@ import Svg,{
 
 export default class SuccessItem extends Component {
     shouldComponentUpdate(prevProps, prevState) {
-        return this.props.item.percentage !== prevProps.item.percentage
+        // return this.props.item.percentage !== prevProps.item.percentage
+        return false
     }
 
   render() {
@@ -63,7 +64,6 @@ export default class SuccessItem extends Component {
                     </Svg>
                 </View>
                 <Text>{this.props.item.name}</Text>
-                
         </TouchableOpacity>
     )
   }

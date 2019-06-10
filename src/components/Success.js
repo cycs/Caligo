@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import {FlatList, StyleSheet, Text, View, Button, Image, Dimensions, TouchableOpacity } from 'react-native';
 import Map from 'Map';
 import { connect } from 'react-redux';
@@ -17,7 +17,7 @@ import Header from './Header'
 import SearchIcon from '../img/search-icon.svg';
 import communesSVG from '../communes-svg.json'
 
-export default class Success extends Component {
+export default class Success extends PureComponent {
     
 static navigationOptions = ({ navigation }) => {
     return {
@@ -36,10 +36,12 @@ static navigationOptions = ({ navigation }) => {
         listSource: [],
         listfiltered: [],
         allSuccess: [],
+        isFetching: false
+
     }
 
-    this.listholder = this.props.list
-
+    this.listSource = []
+    this.listfiltered = this.getList()
 
   }
 
@@ -47,24 +49,24 @@ static navigationOptions = ({ navigation }) => {
   --------------------------------------------------------- */
   componentDidMount() {
     store.subscribe(() => {
-        this.setState({listSource: this.getList()})
+        // this.setState({listSource: this.getList()})
         this.filterList(this.state.searchInput)
     })
 
-      this.setState({
-          listSource: this.getList(),
-          listfiltered: this.getList(),
-        })
+    // this.setState({
+    //     listSource: this.getList(),
+    //     listfiltered: this.getList(),
+    // })
+
+    this.listSource = this.getList()
+    // this.listfiltered = this.getList()
   }
 
   render() {
-      const {height, width} = Dimensions.get('window');
-      const ratio = width / 3.333;
-      const { navigate } = this.props.navigation;
       const numColumns = 3
-      const unlockedSuccesses = this.state.listSource.filter(el => el.isUnlocked)
+      const unlockedSuccesses = this.listfiltered.filter(el => el.isUnlocked)
 
-    return (
+      return (
       <View style={completionStyles.container}>
             
             <Header text='Succès'/>
@@ -73,13 +75,16 @@ static navigationOptions = ({ navigation }) => {
             </View>
             <View style={completionStyles.infos}>
                 <Text style={completionStyles.score}>Succès débloqués</Text>
-                <Text style={completionStyles.score}>{unlockedSuccesses.length} / {this.state.listSource.length}</Text>
+                <Text style={completionStyles.score}>{unlockedSuccesses.length} / {this.listfiltered.length}</Text>
             </View>
             <FlatList
-                extraData={this.state.listfiltered}
+                onRefresh={() => this.onRefresh()}
+                refreshing={this.state.isFetching}
+                windowSize={18}
                 removeClippedSubviews={true}
                 initialNumToRender={20}
-                data={this.sortList(this.state.listfiltered)}
+                maxToRenderPerBatch={3}
+                data={this.sortList(this.listfiltered)}
                 numColumns={numColumns}
                 renderItem={({item}) => {
                 return (
@@ -105,13 +110,24 @@ static navigationOptions = ({ navigation }) => {
 
   /* Methods
   --------------------------------------------------------- */
+    onRefresh() {
+        this.setState({ isFetching: true }, function() { this.fetchData() });
+    }
+
+    fetchData() {
+        this.listfiltered = store.getState().communes.communes.features.map((commune, i) => {
+            return this.getArea(commune, i);
+        });
+
+        this.setState({ isFetching: false });
+    }
+
   toggleModal = (item) => {
     this.setState({ 
         isVisible: !this.state.isVisible,
         successData: item
     });
-    
-}
+  }
 
   renderModal = () => {
         if (this.state.successData !== null) {
@@ -128,9 +144,11 @@ static navigationOptions = ({ navigation }) => {
     }
 
   getList() {
-    const list = store.getState().communes.communes.features.map((commune, i) => {
-      return this.getArea(commune, i);
-    });
+    const list = []
+    
+    for(let i = 0; i < store.getState().communes.communes.features.length; i++){
+      list[i] = this.getArea(store.getState().communes.communes.features[i], i);        
+    }
 
     return list;
   }
@@ -143,33 +161,32 @@ static navigationOptions = ({ navigation }) => {
         )  {
         return {area: 0, explored: 0, percentage: 0, name: feature.properties.NAMN, id: feature.id}
     }
-  let newPolygon = feature.geometry.coordinates[0];
-  let explored = 0;
-  
-  if (feature.geometry.coordinates.length > 1) {
-    newPolygon = feature.geometry.coordinates[1]
-      
-      const  polygonExplored = polygon([feature.geometry.coordinates[0]]);
-      explored = area(polygonExplored);
-  }
 
-  newPolygon = polygon([newPolygon]);
+    let newPolygon = feature.geometry.coordinates[0];
+    let explored = 0;
+    
+    if (feature.geometry.coordinates.length > 1) {
+        newPolygon = feature.geometry.coordinates[1]
+        
+        const  polygonExplored = polygon([feature.geometry.coordinates[0]]);
+        explored = area(polygonExplored);
+    }
 
-  const newArea = area(newPolygon);
-  const percentage = explored / newArea * 100;
-  const name = feature.properties.NAMN;
+    newPolygon = polygon([newPolygon]);
 
+    const newArea = area(newPolygon);
+    const percentage = explored / newArea * 100;
+    const name = feature.properties.NAMN;
 
-  return {
-      id: feature.id,
-      key: feature.id,
-      area: newArea,
-      explored,
-      percentage,
-      name,
-      SHN: feature.properties.SHN,
-      isUnlocked: percentage >= 1
-  }
+    return {
+        id: feature.id,
+        area: newArea,
+        explored,
+        percentage,
+        name,
+        SHN: feature.properties.SHN,
+        isUnlocked: percentage >= 1
+    }
 }
 
   sortList(list) {
@@ -235,7 +252,7 @@ static navigationOptions = ({ navigation }) => {
 
   filterList(text) {
     const lowerText = text.toLowerCase()
-    const copy = this.state.listSource
+    const copy = this.listSource
 
     const newState = copy.filter(item => {
         const name = item.name.toLowerCase()
@@ -243,7 +260,9 @@ static navigationOptions = ({ navigation }) => {
         return name.indexOf(lowerText) > -1;
     })
 
-    this.setState({ listfiltered: newState })
+    // this.setState({ listfiltered: newState })
+    this.listfiltered = newState
+
   }
 
   searchFilterFunction = text => {

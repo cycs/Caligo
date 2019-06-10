@@ -32,7 +32,7 @@ class Completion extends React.Component {
             header: null
       };
     }
-  constructor(props: Props) {
+  constructor(props) {
     super(props);
 
     
@@ -42,25 +42,31 @@ class Completion extends React.Component {
         listSource: [],
         listfiltered: [],
         isModalVisible: false,
+        isFetching: false
     }
 
     this.listholder = this.props.list
 
-
+    this.listSource = []
+    this.listfiltered = []
   }
 
   /* Lifecycle Methods
   --------------------------------------------------------- */
   componentDidMount() {
     store.subscribe(() => {
-        this.setState({listSource: this.getList()})
+        // this.setState({listSource: this.getList()})
         this.filterList(this.state.searchInput)
     })
 
       this.setState({
-          listSource: this.getList(),
-          listfiltered: this.getList(),
+        //   listSource: this.getList(),
+        //   listfiltered: this.getList(),
         })
+
+        this.listSource = this.getList()
+        this.listfiltered = this.getList()
+
   }
 
   render() {
@@ -88,7 +94,9 @@ class Completion extends React.Component {
             <FlatList
                 // ItemSeparatorComponent={this.renderSeparator}
                 // extraData={this.state}
-                data={this.sortList(this.state.listfiltered, this.state.filter)}
+                onRefresh={() => this.onRefresh()}
+                refreshing={this.state.isFetching}
+                data={this.sortList(this.listfiltered, this.state.filter)}
                 renderItem={({item}) => {
                     // const percent = `${item.percentage.toFixed(2)}%`;
                     // const percent = `${item.percentage}%`;
@@ -117,6 +125,18 @@ class Completion extends React.Component {
 
   /* Methods
   --------------------------------------------------------- */
+    onRefresh() {
+        this.setState({ isFetching: true }, function() { this.fetchData() });
+    }
+
+    fetchData() {
+        this.listfiltered = store.getState().communes.communes.features.map((commune, i) => {
+            return this.getArea(commune, i);
+        });
+
+        this.setState({ isFetching: false });
+    }
+
     renderModal = () => {
         return (
             <View style={completionStyles.modal}>
@@ -284,14 +304,12 @@ class Completion extends React.Component {
 
   filterList(text) {
 
-    const copy = this.state.listSource;
+    const copy = this.listSource;
     const newState = copy.filter(item => {
         return item.name.indexOf(text) > -1;
     });
 
-    this.setState({
-        listfiltered: newState
-    })
+    this.listfiltered = newState
   }
 
   searchFilterFunction = text => {

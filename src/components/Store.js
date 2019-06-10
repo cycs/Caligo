@@ -15,7 +15,7 @@ const middleware = [thunk];
 
 const allReducers = combineReducers({
     communes: communesReducer,
-    list: listReducer
+    // list: listReducer
     // list: communesReducer
 })
 

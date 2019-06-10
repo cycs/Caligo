@@ -62,6 +62,7 @@ class Map extends Component {
         /* State
         --------------------------------------------------------- */
         this.state = {
+          userId: null,
           maskWU: {},
           oldArea: {},
           markers: [],
@@ -183,12 +184,14 @@ class Map extends Component {
             
             navigator.geolocation.getCurrentPosition(
                 (position) => {
+                    console.log('getcurrent');
                 this.setState({ 
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
                     timestamp:  position.timestamp,
                     centerCoordinate: { position: [position.coords.latitude, position.coords.longitude] }
                 })
+                this.flyToCurrentPosition()
                 },
                 (error) => {  },
                 { enableHighAccuracy: true, timeout: 20000, maximumAge: 2000 }
@@ -196,11 +199,17 @@ class Map extends Component {
 
             this.watchPosition = navigator.geolocation.watchPosition(
                 (lastPosition) => {
-                    // console.log(lastPosition);
+                    const position = [lastPosition.coords.longitude, lastPosition.coords.latitude]
+
+                    const thisPos = [Math.round(parseFloat(position[0]) * 1000), Math.round(parseFloat(position[1]) * 1000)]
+                    const lastPos = [Math.round(parseFloat(this.state.lastPosition.coords.longitude) * 1000), Math.round(parseFloat(this.state.lastPosition.coords.latitude) * 1000)]
+
                     this.setState({lastPosition, centerCoordinate: { position: lastPosition }})
 
+                    if(thisPos[0] === lastPos[0] && thisPos[1] === lastPos[1]) return false
+                    
                     const activeBonus = this.getActiveBonus().then(res => {
-                        this.drawCircle(res)
+                        this.drawCircle(res, position)
                     })
                 },
                 (error) => { },
@@ -217,10 +226,10 @@ class Map extends Component {
     /* Lifecycle methods
     --------------------------------------------------------- */
 
-    async componentDidMount() {
+    async componentDidMount() { 
         this.props.fetchData()
+        AsyncStorage.getItem('USER').then((userId) => this.setState({userId}))
         await this.requestLocationPermission()
-        
     }
 
     componentWillReceiveProps(newProps) {
@@ -233,7 +242,7 @@ class Map extends Component {
         // console.log("will unmount")
         const {newMask, i, id} = this.state.maskWU
         this.props.communesUpdate(newMask, i, id, true)
-        this.props.communesCompletion(newMask, i)
+        // this.props.communesCompletion(newMask, i)
     }
 
     
@@ -497,11 +506,11 @@ class Map extends Component {
         return false
     }
 
-    drawCircle(activeBonus) {        
+    drawCircle(activeBonus, position) {        
         if (this.props.loading) return false; // prevents drawing before list of municipalities has been loaded
         // try {
             // console.log(AsyncStorage.getItem('USER').then(data => console.log(data)))
-            const position = [this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude]
+            // const position = [this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude]
 
             const center = [ ...position ]
             const radius = activeBonus ? 0.1 : 0.05
@@ -511,12 +520,13 @@ class Map extends Component {
             let newCircle = circle(center, radius, options)
             const circlePoI = Object.assign({}, newCircle)
 
-            this.props.communes.features.map((commune, i) => {
+            // this.props.communes.features.map((commune, i) => {
+                // const
+            for(let i = 0; i < this.props.communes.features.length; i++) {
+                const commune = this.props.communes.features[i]
                 const isInPolygon = this.isPositionInPolygon(newCircle, commune)
-                this.isGeometryCollection(commune);
-
+                // this.isGeometryCollection(commune);
                 if (isInPolygon) {
-
                     let coords = commune.geometry.coordinates[0]
                     let oldAreaUphold = 0;
 
@@ -546,7 +556,7 @@ class Map extends Component {
                         const id = commune.id;
                         const oldAreaUpdated = this.state.oldArea[id] ? this.state.oldArea[id] : oldAreaUphold 
 
-                        const mustUpdate = newArea - oldAreaUpdated > 50000 // If area diff is < 30m³, then no mutation
+                        const mustUpdate = newArea - oldAreaUpdated > 50000 // If area diff is < 50m³, then no mutation
                         if(mustUpdate || !this.state.oldArea[id]) {
                             const oldArea = Object.assign({}, this.state.oldArea)
                             oldArea[id] = newArea
@@ -557,41 +567,36 @@ class Map extends Component {
                         this.setState({ maskWU }) // Will unmount update 
                         
                         this.props.communesUpdate(newMask, i, id, mustUpdate);
-                        this.props.communesCompletion(newMask, i);
+                        // this.props.communesCompletion(newMask, i);
                         this.isBonusRevealed(commune.properties.SHN, position, circlePoI)
                     } else {
-                    // console.log(this.props.communes.features, commune, commune.id);
-                        AsyncStorage.getItem('USER').then(userId => {
-                            // console.log(userId)
-                            const mutation = `
-                                mutation createMunicipality($data: String!, $id: ID!) {
-                                    createMunicipality(data: $data, userId: $id) { id }
-                                }`
+                        const mutation = `
+                            mutation createMunicipality($data: String!, $id: ID!) {
+                                createMunicipality(data: $data, userId: $id) { id }
+                            }`
 
-                            const stringCommune = JSON.stringify(commune);
+                        const stringCommune = JSON.stringify(commune);
 
-                            const newVariables = {
-                                id: userId,
-                                data: stringCommune,
-                            };
+                        const newVariables = {
+                            id: this.state.userId,
+                            data: stringCommune,
+                        };
 
-                            request('https://api.graph.cool/simple/v1/cjtfy59zu7gaj0138jz9a1xon', mutation, newVariables).then((newData) => {
-                                // console.log(newData)    
-                                newMask.id = newData.createMunicipality.id;
-                        
-                                const id = newData.createMunicipality.id;
-        
-                                this.props.communesUpdate(newMask, i, id);
-                                this.props.communesCompletion(newMask, i);
-                                this.isBonusRevealed(commune.properties.SHN, position, circlePoI)
-                            });
+                        request('https://api.graph.cool/simple/v1/cjtfy59zu7gaj0138jz9a1xon', mutation, newVariables).then((newData) => {
+                            newMask.id = newData.createMunicipality.id;
+                    
+                            const id = newData.createMunicipality.id;
+    
+                            this.props.communesUpdate(newMask, i, id);
+                            // this.props.communesCompletion(newMask, i);
+                            this.isBonusRevealed(commune.properties.SHN, position, circlePoI)
+                        });
 
-                        })
 
                     }
 
                 }
-            })
+            }
         // } catch (err) {
         //     console.log(err);
         //     return false
@@ -630,16 +635,13 @@ class Map extends Component {
 
         let newPolygon = commune.geometry.coordinates.length == 2 ? polygon([commune.geometry.coordinates[1]]) : commune;
         
-        // console.log(newPolygon);
         
         try {
             const intersection = intersect(circle, newPolygon);
             const contains = booleanContains(newPolygon, circle);
 
-            // console.log(intersection, contains);
             return intersection !== null || contains;
         } catch(err) {
-            // console.log(err);
             return false
         }
     }
@@ -668,7 +670,6 @@ class Map extends Component {
     }
 
     showPosition() {
-        // console.log('POSITION', this.state.lastPosition.coords);
         let shapePoint = point([this.state.lastPosition.coords.longitude, this.state.lastPosition.coords.latitude]);
         return (
           <Mapbox.ShapeSource
@@ -684,7 +685,6 @@ class Map extends Component {
     }
 
     getList() {
-        // console.log("GET LIST", this.props)
 
         const list = this.props.communes.features.map((commune) => {
         return this.getArea(commune);

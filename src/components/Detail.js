@@ -166,33 +166,27 @@ export default class Detail extends Component {
 const styles = StyleSheet.create({
     detailContainer: {
         backgroundColor: colors.oldLace,
+        flexDirection: 'column',
+        flex: 1
+
     },
     headerContainer: {
         position: 'relative',
         height: 150,
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: colors.goldenTainoi,
-        // paddingTop: 20
     },
     titleContainer: {
         width: '80%',
         marginLeft: 'auto',
         marginRight: 'auto',
-        // alignItems: 'flex-start',
-        // justifyContent: 'flex-start',
         position: 'relative',
-        // backgroundColor: 'green',
     },
     maintitle: {
         fontSize: 48,
         fontFamily: 'Mukta-Bold',     
         color: colors.bronzetone,
-        // textShadowColor: 'rgba(255, 255, 255, 0.15)',
-        // textShadowOffset: {width: 0, height: 1},
-        // textShadowRadius: 10,
         paddingTop: 10,
-        // paddingLeft: 50,
         lineHeight: 50,
     },
     communeSvg: {
@@ -203,7 +197,6 @@ const styles = StyleSheet.create({
 
     header: {
         position: 'absolute',
-        // left: 0,
         bottom: 0,
     },
     container: {
@@ -216,7 +209,8 @@ const styles = StyleSheet.create({
         marginRight: 'auto',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 18
+        marginBottom: 18,
+        flex: 1
 
     },
     mainData: {
@@ -224,7 +218,6 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
         flexDirection: 'row',
         flexWrap: 'wrap',
-        // backgroundColor: 'green'
     },
     PoIData: {
         width: '100%',

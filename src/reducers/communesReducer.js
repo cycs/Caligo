@@ -64,7 +64,6 @@ export default function communesReducer(state = initialState, { type, mask, i, d
                 communes: myData
             };
         case 'COMMUNESUPDATE':
-            // console.log('COMMUNESUPDATE', {state, mask, i});
             return update(state, {
                 communes: {
                     features: {
